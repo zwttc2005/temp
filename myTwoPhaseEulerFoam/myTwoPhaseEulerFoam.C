@@ -314,14 +314,14 @@ int main(int argc, char *argv[])
 
     // Load the shared library
     //-------------------------------------------------------------------
-    //std::string err;
-    //bool loaded_REFPROP = load_REFPROP(err);
-    //long ierr = 0, nc = 1; 
-    //char herr[255], hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
+    std::string err;
+    bool loaded_REFPROP = load_REFPROP(err);
+    long ierr = 0, nc = 1; 
+    char herr[255], hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
 
-    //SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
+    SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
 
-    //Info<< "error massage:" << herr << nl << endl; 
+    Info<< "error massage:" << herr << nl << endl; 
     //-------------------------------------------------------------------	
 
     pimpleControl pimple(mesh);
@@ -336,7 +336,7 @@ int main(int argc, char *argv[])
         #include "CourantNos.H"
         #include "setDeltaT.H"
 
-
+	//---------------------------------------------------------
 	//Thermodynamic calculations
 	//{
 		//long ierr = 0;
@@ -348,9 +348,74 @@ int main(int argc, char *argv[])
        	//Info<< "enthalpy = " << w << nl << endl; 
 	
 	//}
+	//----------------------------------------------------------			
 
 
-        runTime++;
+
+	
+	
+	//-----------------------------------------------------------
+	// sonic/supersonic outflow boundary condition implementation
+	// 
+	// In 0/p file, sideRight boundary condition must be of 
+	// fixed value type 
+	//-----------------------------------------------------------		
+	label patchID = mesh.boundaryMesh().findPatchID("sideRight");
+	//p.boundaryField()[patchID] == scalar(1000000);
+	const scalarField& p_test = p.boundaryField()[patchID];
+	    
+	// make a reference to cell adjacent to boundary patch 
+	scalar p_interior = p[(celln-2)];
+	scalar U_interior = mag(U[(celln-2)]);
+
+        scalar rho_interior = alpha1[(celln-2)]*rho1[(celln-2)]+alpha2[(celln-2)]*rho2[(celln-2)];
+
+	//Info << "pressure = " << p_interior << nl << endl;	
+	//Info << "velocity = " << U_interior << nl << endl;
+	//Info << "density = " << rho_interior << nl << endl;	
+  
+        // obtaining the speed of sound 
+	scalar sos = 200.0;
+		
+	// obtaining the ghost cell information 
+	scalar U_ghost = mag(U.boundaryField()[patchID][0]);
+        scalar p_ghost = p.boundaryField()[patchID][0];
+	scalar rho_ghost = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
+	    
+	Info << "pressure = " << p_ghost << nl << endl;	
+	Info << "velocity = " << U_ghost << nl << endl;
+	Info << "density = " << rho_ghost << nl << endl;	
+
+	// obtaining current timestep deltaT
+        scalar dt = runTime.deltaT().value();
+		
+        // wave amplitude calculation
+	if (runTime.time().value() == 0.0)
+	{	
+	    U_ghost = scalar(200);
+	    p_ghost = scalar(1500000);
+	    rho_ghost = scalar(20.19);
+	}
+
+	scalar wave1 = 0;
+	scalar wave2 = (U_ghost/xDimDim[1])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
+	scalar wave3 = ((U_ghost+sos)/xDimDim[1])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
+
+	scalar DpDt = -0.5*(wave3+wave1);
+	scalar DuDt = -0.5/(rho_ghost*sos)*(wave3-wave1);
+	scalar DrhoDt = 1.0/(sos*sos)*(DpDt+wave2);
+
+	scalar p_ghost_update = p_ghost + DpDt*dt;
+	scalar U_ghost_update = U_ghost + DuDt*dt;
+	scalar rho_ghost_update = rho_ghost + DrhoDt*dt;
+	   
+	Info << "p_ghost_update = " << p_ghost_update << nl << endl;	
+	Info << "U_ghost_update = " << U_ghost_update << nl << endl;
+	Info << "rho_ghost_update = " << rho_ghost_update << nl << endl;
+	//-----------------------------------------------------------
+        
+	// runtime time output    
+	runTime++;
         Info<< "Time = " << runTime.timeName() << nl << endl;
 
         // --- Pressure-velocity PIMPLE corrector loop
@@ -358,6 +423,10 @@ int main(int argc, char *argv[])
         {
             fluid.solve();
             fluid.correct();
+
+            // update boundary conditions
+	    p.boundaryField()[patchID] == p_ghost_update;
+
 
 	    U_bulk = mag(alpha1*U1+alpha2*U2);
 	    rho_bulk = alpha1*rho1+alpha2*rho2;						

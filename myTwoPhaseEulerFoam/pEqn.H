@@ -96,6 +96,7 @@
     );
 
     // Update the fixedFluxPressure BCs to ensure flux consistency
+    //Info << "p_pEqu" << p_test << nl << endl; 
     setSnGrad<fixedFluxPressureFvPatchScalarField>
     (
         p.boundaryField(),
@@ -110,7 +111,10 @@
             )
         )/(mesh.magSf().boundaryField()*rAUf.boundaryField())
     );
-
+    
+    //
+    //Info << "p_pEqu" << p_test << nl << endl; 
+    
     tmp<fvScalarMatrix> pEqnComp1;
     tmp<fvScalarMatrix> pEqnComp2;
 
@@ -185,9 +189,17 @@
           + (alpha2*psi2/rho2)*correction(fvm::ddt(p));
     }
 
+    
+    //Info << "p_pEqu" << p_test << nl << endl; 
+    
+    
     // Cache p prior to solve for density update
     volScalarField p_0(p);
 
+    
+    //Info << "p_pEqu" << p_test << nl << endl;
+
+    
     while (pimple.correctNonOrthogonal())
     {
         fvScalarMatrix pEqnIncomp
@@ -260,9 +272,15 @@
             U = fluid.U();
         }
     }
-
+    
+    //Info << "p_pEqu" << p_test << nl << endl; 
+    
     p = max(p, pMin);
-
+    
+    Info << "p_pEqu" << p_test << nl << endl; 
+    
+    Info << "p_cell" << p[998] << nl << endl;
+    
     // Update densities from change in p
    
     rho1 += psi1*(p - p_0);

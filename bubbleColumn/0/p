@@ -27,12 +27,8 @@ boundaryField
     }
     sideRight
     {
-        type            myWaveTransmissive;
-        psi             psi_bulk;
-        gamma           1.4;
-        fieldInf        100000;
-        lInf            10;
-        value           uniform 100000;
+        type            fixedValue;
+        value           uniform 2e+06;
     }
     topbottom
     {
