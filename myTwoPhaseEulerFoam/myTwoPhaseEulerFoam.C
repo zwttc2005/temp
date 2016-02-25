@@ -255,7 +255,7 @@ int main(int argc, char *argv[])
     {
     	if (celli >= (celln-100) && celli < (celln))
 	{
-		celld = (double) (celli-(celln-100))/100;  
+		celld = (double) (celli-(celln-100))/50;  
 		scaleFactor = Foam::tanh(celld);	
 		flowArea[celli] = flowArea[(celln-100)]-flowArea[(celln-100)]*scalar(scaleFactor);	
 	}
@@ -359,28 +359,53 @@ int main(int argc, char *argv[])
             fluid.solve();
             fluid.correct();
 
-	    U_bulk = mag(alpha1*U1+alpha2*U2);
-	    rho_bulk = alpha1*rho1+alpha2*rho2;						
+	          U_bulk = mag(alpha1*U1+alpha2*U2);
+	          rho_bulk = alpha1*rho1+alpha2*rho2;						
             psi_bulk =1.0/(alpha1/thermo1.psi()+alpha2/thermo2.psi());		 
 	    
+
+
+
+            //**************************************************
+            // in-loop boundary condition setup
+            //**************************************************
+          
+            // find the patch ID for sideRight
+            label patchID = mesh.boundaryMesh().findPatchID("sideRight");
+            // check if the patch actually exits
+            if (patchID == -1) FatalError << "patch not found!" << exit(FatalError);
+
+
+            p.boundaryField()[patchID] == scalar(1000000.0);  
+
+
+            // output the boundary velocity 
+            Info << "U_boundary = " << U.boundaryField()[patchID] << nl << endl;  
+            //Info << "p_boundary = " << p.boundaryField()[patchID] << nl << endl;
+            Info << "T.air_boundary = " << thermo1.T().boundaryField()[patchID] << nl << endl;
+            Info << "T.water_boundary = " << thermo2.T().boundaryField()[patchID] << nl << endl;
+            Info << "alpha1_boundary = " << alpha1.boundaryField()[patchID] << nl << endl;
+
+
+
             volScalarField contErr1
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
               - (fvOptions(alpha1, rho1)&rho1)                       //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
               + alpha1*rho1*mag(U1)*areaSource	
-	    );
+	          );
 
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
                - (fvOptions(alpha2, rho2)&rho2)                    //-gamma_LV+gamma_VL // 
                + alpha2*rho2*mag(U2)*areaSource	 
-	    );
+	          );
 
 			
             #include "UEqns.H"
 
-	    U_bulk = mag(alpha1*U1+alpha2*U2);                     // update velocity field                   				
+	          U_bulk = mag(alpha1*U1+alpha2*U2);                     // update velocity field                   				
        
             #include "EEqns.H"
 
@@ -396,15 +421,19 @@ int main(int argc, char *argv[])
             {
                 fluid.correctTurbulence();
             }
+        
+  
+            Info << "p_boundary = " << p.boundaryField()[patchID] << nl << endl;
+  
         }
 
         #include "write.H"
 	
-	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
+	      //const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
 
 
-        Info<< "flowArea=" << flowArea[950] << nl << endl; 
-   	//Info<< "flowAreaGrad=" << flowAreaGrad[950] << nl << endl; 
+        Info<< "flowArea=" << flowArea[999] << nl << endl; 
+   	    //Info<< "flowAreaGrad=" << flowAreaGrad[950] << nl << endl; 
         //Info<< "areaSource=" << areaSource[950] << nl << endl;
 
 
@@ -433,7 +462,8 @@ int main(int argc, char *argv[])
 	//}//move on to next cell 
 
 
-	Info<< "ExecutionTime = "
+
+    Info<< "ExecutionTime = "
             << runTime.elapsedCpuTime()
             << " s\n\n" << endl;
     }
