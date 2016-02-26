@@ -26,9 +26,9 @@ boundaryField
     }
     sideRight
     {
-        //type               zeroGradient;
-      	type               fixedValue; 
-        value              uniform (0 0 0); 
+        type               zeroGradient;
+      	//type               fixedValue; 
+        //value              uniform (0 0 0); 
     }
     topbottom
     {

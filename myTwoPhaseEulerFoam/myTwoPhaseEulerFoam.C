@@ -298,7 +298,7 @@ int main(int argc, char *argv[])
     	}
     	else if (celli >= (celln-100) && celli < celln) 
 	{
-		areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
+		areaSource[celli] = 0;//flowAreaGrad[celli]/flowArea[celli];
 	}
 	else if (celli >= celln)
 	{	
@@ -347,9 +347,9 @@ int main(int argc, char *argv[])
 	const scalarField& p_test = p.boundaryField()[patchID];
 	    
 	// make a reference to cell adjacent to boundary patch 
-	scalar p_interior = p[(celln)];
-	scalar U_interior = mag(U[(celln)]);
-  scalar rho_interior = alpha1[(celln)]*rho1[(celln)]+alpha2[(celln)]*rho2[(celln)];
+	scalar p_interior = p[(celln-1)];
+	scalar U_interior = mag(U[(celln-1)]);
+  scalar rho_interior = alpha1[(celln-1)]*rho1[(celln-1)]+alpha2[(celln-1)]*rho2[(celln-1)];
 
 	//Info << "pressure = " << p_interior << nl << endl;	
 	//Info << "velocity = " << U_interior << nl << endl;
@@ -484,18 +484,28 @@ int main(int argc, char *argv[])
 
         // --- Pressure-velocity PIMPLE corrector loop
         while (pimple.loop())
-        {
+        { 
+
+            
             fluid.solve();
             fluid.correct();
 
             // update boundary conditions
 	          p.boundaryField()[patchID] == p_ghost_update;
-            U1.boundaryField()[patchID] == vector(U_ghost_update,0,0);
-            U2.boundaryField()[patchID] == vector(0,0,0); //vector(U_ghost_update,0,0);
-            thermo1.T().boundaryField()[patchID] == T_ghost_update;
-            thermo2.T().boundaryField()[patchID] == T_ghost_update;
+            //U1.boundaryField()[patchID] == vector(U_ghost_update,0,0);
+            //U2.boundaryField()[patchID] == vector(0,0,0); //vector(U_ghost_update,0,0);
+            //thermo1.T().boundaryField()[patchID] == T_ghost_update;
+            //thermo2.T().boundaryField()[patchID] == T_ghost_update;           
+	          
+            //p[celln] = p_ghost_update;
+            //U1[celln] = vector(U_ghost_update,0,0);
+            //U2[celln] = vector(U_ghost_update,0,0);
+            //thermo1.T()[celln] = T_ghost_update;
+            //thermo2.T()[celln] = T_ghost_update;
 
-	          U_bulk = mag(alpha1*U1+alpha2*U2);
+
+
+            U_bulk = mag(alpha1*U1+alpha2*U2);
 	          rho_bulk = alpha1*rho1+alpha2*rho2;						
             psi_bulk =1.0/(alpha1/thermo1.psi()+alpha2/thermo2.psi());		 
 	    

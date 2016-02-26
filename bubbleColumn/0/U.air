@@ -26,10 +26,10 @@ boundaryField
     }
     sideRight
     {
-        //type               zeroGradient;
+        type               zeroGradient;
         
-        type               fixedValue; 	
-        value              uniform (0 0 0);  
+        //type               fixedValue; 	
+        //value              uniform (0 0 0);  
         
         //type               myWaveTransmissive;         
 	      //phi                phi; 
