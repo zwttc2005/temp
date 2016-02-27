@@ -76,10 +76,8 @@ int main(int argc, char *argv[])
 	 scalar(0.000));
 
     //quasi-one-dimensional flow setup
-    #include "changeArea.H"
+    #include "changeArea.H"		
 
-    //load refprop thermodynamic library 			
-    #include "refpropLibLoading.H"	
 
     //dummy vector  
     vector unity(1,0,0);
