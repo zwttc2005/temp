@@ -440,7 +440,7 @@ int main(int argc, char *argv[])
 	  scalar DuDt = -0.5/(rho_ghost*sos)*(wave3-wave1);
 	  scalar DrhoDt = 1.0/(sos*sos)*(DpDt+wave2);
 
-  	p_ghost_update = scalar(800000); //p_ghost + DpDt*dt;
+  	p_ghost_update = scalar(100000); //p_ghost + DpDt*dt;
 	  U_ghost_update = U_ghost + DuDt*dt;
 	  rho_ghost_update = rho_ghost + DrhoDt*dt;
   

@@ -27,9 +27,8 @@ boundaryField
     }
     sideRight
     {
-        type            zeroGradient;
-        //type            fixedValue;
-        //value           uniform 280;
+        type            advective;
+        value           uniform 280;
     }
     topbottom
     {
