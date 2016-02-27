@@ -417,7 +417,7 @@ int main(int argc, char *argv[])
 
   if (U_ghost > sos)
   {
-	  scalar wave1 = 0;
+	  scalar wave1 = ((U_ghost-sos)/xDimDim[1])*(p_ghost-p_interior-rho_ghost*sos*(U_ghost-U_interior));
 	  scalar wave2 = (U_ghost/xDimDim[1])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
 	  scalar wave3 = ((U_ghost+sos)/xDimDim[1])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
 	  
