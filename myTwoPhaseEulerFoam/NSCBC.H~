@@ -19,7 +19,7 @@
   
   
   	// obtaining the ghost cell information 
-	scalar U_ghost = mag(U1.boundaryField()[patchID][0]);
+	scalar U_ghost = mag(U.boundaryField()[patchID][0]);
   	scalar p_ghost = p.boundaryField()[patchID][0];
 	scalar rho_ghost = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
 	scalar rho1_ghost = rho1.boundaryField()[patchID][0];
