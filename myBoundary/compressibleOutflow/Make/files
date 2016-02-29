@@ -1,2 +1,0 @@
-myWaveTransmissiveFvPatchFields.C
-LIB = $(FOAM_USER_LIBBIN)/libuserBCs

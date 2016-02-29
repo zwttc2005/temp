@@ -1,1 +1,0 @@
-../myWaveTransmissiveFvPatchFields.C
