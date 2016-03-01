@@ -177,7 +177,7 @@
     {
     	if (celli >= (celln-100) && celli < (celln))
 	{
-		celld = (double) (celli-(celln-100))/100;  
+		celld = (double) (celli-(celln-100))/50;  
 		scaleFactor = Foam::tanh(celld);	
 		flowArea[celli] = flowArea[(celln-100)]-flowArea[(celln-100)]*scalar(scaleFactor);	
 	}

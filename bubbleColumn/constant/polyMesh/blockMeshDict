@@ -84,7 +84,7 @@ boundary
 (
     sideLeft
     {
-        type symmetryPlane;
+        type patch;
         faces
         (
             (0 4 7 3)

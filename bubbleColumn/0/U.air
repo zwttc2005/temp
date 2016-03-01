@@ -22,7 +22,8 @@ boundaryField
 {
     sideLeft
     {
-        type               symmetryPlane;
+        type               fixedValue; //symmetryPlane;
+	value              uniform (0 0 0);   
     }
     sideRight
     {
