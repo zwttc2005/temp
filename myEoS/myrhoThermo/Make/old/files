@@ -1,5 +1,0 @@
-./myRhoThermos.C
-./rhoThermo.C
-./basicThermo/basicThermo.C
-./fluidThermo/fluidThermo.C
-LIB = $(FOAM_USER_LIBBIN)/libmyRhoThermo
