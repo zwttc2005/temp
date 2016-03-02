@@ -119,7 +119,12 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::rho
 ) const
 {
     scalar z = Z(p, T);
+	
+    //Info << "liquid_density = " << p/(z*this->R()*T) << nl << endl;
+    
     return p/(z*this->R()*T);
+	
+    	
 }
 
 
@@ -146,91 +151,91 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::Z
     // Load the shared library
     //-------------------------------------------------------------------
     
-    static int flag = 0;
-    long ierr = 0;
-    char herr[255];
+    //static int flag = 0;
+    //long ierr = 0;
+    //char herr[255];
 
-    if (flag == 0)
-    {
-    	std::string err;
-    	bool loaded_REFPROP = load_REFPROP(err);
-    	long nc = 1; 
-    	char hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
+    //if (flag == 0)
+    //{
+    	//std::string err;
+    	//bool loaded_REFPROP = load_REFPROP(err);
+    	//long nc = 1; 
+    	//char hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
 
-    	SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
+    	//SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
  
-    	if (ierr != 0)
-    	{
-    		Info<< "error massage:" << herr << nl << endl;  
-   	}
+    	//if (ierr != 0)
+    	//{
+    		//Info<< "error massage:" << herr << nl << endl;  
+   	//}
     	
-	flag++;
-    }
+	//flag++;
+    //}
     //-------------------------------------------------------------------
 
 
-    long kph = -1, kguess = 0;
-    double Tliq = T, pliq = p/1000.0,xliq[] = {1.0},rholiq = NULL;
-    TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
+    //long kph = -1, kguess = 0;
+    //double Tliq = T, pliq = p/1000.0,xliq[] = {1.0},rholiq = NULL;
+    //TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
 
     //Info << "density =" << rholiq << nl << endl;
 
-    scalar root = p*(1.0/(rholiq*1000.0))/(8.314*T); 
+    //scalar root = p*(1.0/(rholiq*1000.0))/(8.314*T); 
     
-    //scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
-    //scalar b = 0.07780*this->R()*Tc_/Pc_;
-    //scalar Tr = T/Tc_;
+    scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
+    scalar b = 0.07780*this->R()*Tc_/Pc_;
+    scalar Tr = T/Tc_;
 
-    //scalar alpha =
-        //sqr
-        //(
-            //1.0
-          //+ (0.37464 + 1.54226*omega_- 0.26992*sqr(omega_))
-          //* (1.0 - sqrt(Tr))
-        //);
+    scalar alpha =
+        sqr
+        (
+          1.0
+          + (0.37464 + 1.54226*omega_- 0.26992*sqr(omega_))
+          * (1.0 - sqrt(Tr))
+        );
 
-    //scalar B = b*p/(this->R()*T);
-    //scalar A = a*alpha*p/sqr(this->R()*T);
+    scalar B = b*p/(this->R()*T);
+    scalar A = a*alpha*p/sqr(this->R()*T);
 
-    //scalar a2 = B - 1.0;
-    //scalar a1 = A - 2.0*B - 3.0*sqr(B);
-    //scalar a0 = -A*B + sqr(B) + pow3(B);
+    scalar a2 = B - 1.0;
+    scalar a1 = A - 2.0*B - 3.0*sqr(B);
+    scalar a0 = -A*B + sqr(B) + pow3(B);
 
-    //scalar Q = (3.0*a1 - a2*a2)/9.0;
-    //scalar Rl = (9.0*a2*a1 - 27.0*a0 - 2.0*a2*a2*a2)/54;
+    scalar Q = (3.0*a1 - a2*a2)/9.0;
+    scalar Rl = (9.0*a2*a1 - 27.0*a0 - 2.0*a2*a2*a2)/54;
 
-    //scalar Q3 = Q*Q*Q;
-    //scalar D = Q3 + Rl*Rl;
+    scalar Q3 = Q*Q*Q;
+    scalar D = Q3 + Rl*Rl;
 
-    //scalar root = -1.0;
+    scalar root = -1.0;
 
-    //if (D <= 0.0)
-    //{
-        //scalar th = ::acos(Rl/sqrt(-Q3));
-        //scalar qm = 2.0*sqrt(-Q);
-        //scalar r1 = qm*cos(th/3.0) - a2/3.0;
-        //scalar r2 = qm*cos((th + 2.0*constant::mathematical::pi)/3.0) - a2/3.0;
-        //scalar r3 = qm*cos((th + 4.0*constant::mathematical::pi)/3.0) - a2/3.0;
+    if (D <= 0.0)
+    {
+        scalar th = ::acos(Rl/sqrt(-Q3));
+        scalar qm = 2.0*sqrt(-Q);
+        scalar r1 = qm*cos(th/3.0) - a2/3.0;
+        scalar r2 = qm*cos((th + 2.0*constant::mathematical::pi)/3.0) - a2/3.0;
+        scalar r3 = qm*cos((th + 4.0*constant::mathematical::pi)/3.0) - a2/3.0;
 
-        //root = min(r1, min(r2, r3));
-    //}
-    //else
-    //{
+        root = min(r1, min(r2, r3));
+    }
+    else
+    {
         // one root is real
-        //scalar D05 = sqrt(D);
-        //scalar S = pow(Rl + D05, 1.0/3.0);
-        //scalar Tl = 0;
-        //if (D05 > Rl)
-        //{
-            //Tl = -pow(mag(Rl - D05), 1.0/3.0);
-        //}
-        //else
-        //{
-            //Tl = pow(Rl - D05, 1.0/3.0);
-        //}
+        scalar D05 = sqrt(D);
+        scalar S = pow(Rl + D05, 1.0/3.0);
+        scalar Tl = 0;
+        if (D05 > Rl)
+        {
+            Tl = -pow(mag(Rl - D05), 1.0/3.0);
+        }
+        else
+        {
+            Tl = pow(Rl - D05, 1.0/3.0);
+        }
 
-        //root = S + Tl - a2/3.0;
-    //}
+        root = S + Tl - a2/3.0;
+    }
 
     return root;
 }

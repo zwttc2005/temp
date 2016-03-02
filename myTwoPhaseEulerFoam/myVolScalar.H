@@ -186,3 +186,29 @@
 	mesh,
  	dimensionedScalar("0",dimensionSet (1,-3,-1,0,0),0)
    );
+
+
+   volScalarField gammaVu
+   (
+     IOobject
+     (
+ 	"gammaVu",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-2,-2,0,0),0)
+   );
+
+
+   volScalarField gammaLu
+   (
+     IOobject
+     (
+ 	"gammaLu",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-2,-2,0,0),0)
+   );

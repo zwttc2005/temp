@@ -20,7 +20,7 @@ thermoType
     type            heRhoThermo;
     mixture         pureMixture;
     transport       const;
-    thermo          hRefpropLiq; //hConst;
+    thermo          hRefpropLiq;//hConst; //hRefpropLiq;
     equationOfState RefpropLiq;  //perfectFluid;   //rho = ( 1./RT)*p + rho0
     specie          specie;
     energy          sensibleEnthalpy;  // not absolute internal energy which takes Hf into account

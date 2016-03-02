@@ -141,14 +141,16 @@ int main(int argc, char *argv[])
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
               - (fvOptions(alpha1, rho1)&rho1)                       //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
-              + alpha1*rho1*mag(U1)*areaSource	
+              + alpha1*rho1*mag(U1)*areaSource
+	      - gammaV
 	          );
 
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
                - (fvOptions(alpha2, rho2)&rho2)                    //-gamma_LV+gamma_VL // 
-               + alpha2*rho2*mag(U2)*areaSource	 
+               + alpha2*rho2*mag(U2)*areaSource
+	       - gammaL
 	          );
 
 			

@@ -44,48 +44,70 @@ for(i = 0; i < celln+1; i++)
 	rhoLiqS = rho2[i];
 	pS = p[i];
 
-	//qV[i] = (Ctou/tou)*alpha1[i]*(hSatVs-hVapS);
-	//qL[i] = (Ctou/tou)*alpha1[i]*(hSatLs-hLiqS);
+	qV[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatV-hVapS);
+	qL[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatL-hLiqS);
 
 	// mass transfer calculation
-	//qVs = qV[i];
-	//qLs = qL[i];
-	//gammaV[i] = -(qVs+qLs)/(hSatVs-hSatLs);
-	//gammaL[i] = -gammaV[i];
+	qVs = qV[i];
+	qLs = qL[i];
+	
+	gammaV[i] = -(qVs+qLs)/(hSatV-hSatL);
+	gammaL[i] = -gammaV[i];
+	
+	// private doubles
+	//scalar mDotV, mDotL;
+	//if (pS > pSatV) mDotV = (Ctou/tou)*(-alpha1[i]*rhoVapS*((pS-pSatV)/pSatV));
+	//else mDotV = 0.0;
 
-	gammaV[i] = (Ctou/tou)*(-alpha1[i]*rhoVapS*((pS-pSatV)/pSatV)+alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL));
-	gammaL[i] = - gammaV[i]; 
+	//if (pSatL > pS) mDotL = (Ctou/tou)*(alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL));
+	//else mDotL = 0.0;
 
+	//if (TvapS>300.0 || hVapS > hSatV)
+	//{
+		//mDotV = 0.0;
+	//}
+
+	//if (TliqS>300.0 || hLiqS < hSatL)
+	//{
+		//mDotL = 0.0;
+	//}
+
+	//gammaV[i] = mDotL-mDotV;
+	//gammaL[i] = - gammaV[i]; 
+
+		
 	// heat transfer calculation 
-	gammaVs = gammaV[i];
-	gammaLs = gammaL[i];
+	//gammaVs = gammaV[i];
+	//gammaLs = gammaL[i];
 
 	if (gammaVs >= 0.0)
 	{
-		qV[i] = gammaVs*hSatV;
-		qL[i] = gammaLs*hSatV;
+		//qV[i] = gammaVs*hSatV;
+		//qL[i] = gammaLs*hSatV;
+		
+		gammaVu[i] = gammaV[i]*mag(U1[i]);
+		gammaLu[i] = gammaL[i]*mag(U1[i]);
+	
 	}
 	else if (gammaVs < 0.0)
 	{
-		qV[i] = gammaVs*hSatL;
-		qL[i] = gammaLs*hSatL;
+		//qV[i] = gammaVs*hSatL;
+		//qL[i] = gammaLs*hSatL;
+
+		gammaVu[i] = gammaV[i]*mag(U2[i]);
+		gammaLu[i] = gammaL[i]*mag(U2[i]);
 	}
 
 	
-	if (TvapS>300.0 || hVapS > hSatV)
-	{
-		qV[i] = 0.0;
-		gammaV[i] = 0.0;
-	}
 
-	if (TliqS>300.0 || hLiqS < hSatL)
-	{
-		qL[i] = 0.0;
-		gammaL[i] = 0.0;
-	}
 	
+	//qL[i] = scalar(0);
+	//gammaL[i] = scalar(0);
+	//gammaLu[i] = scalar(0);
 }
     
+
+
 //{	
 	//double Tgas,pgas,rhogas,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL,dummy=NULL;   	
 	//double xgas[]={1.0};
@@ -122,8 +144,9 @@ for(i = 0; i < celln+1; i++)
     	//}
 //}
 
-
-Info << "hVapS = " << hVap[999] << nl << endl;
-Info << "hSatV = " << hSatV << nl << endl;
+Info << "gammaL = " << gammaL[999] << nl << endl;
+Info << "qL = " << qL[999] << nl << endl;
+Info << "hLiqS = " << hLiq[999] << nl << endl;
+Info << "hSatL = " << hSatL << nl << endl;
 
 

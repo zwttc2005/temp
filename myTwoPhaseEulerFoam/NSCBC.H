@@ -69,13 +69,15 @@
 
     T_cal = T1_ghost, rho_cal = rho1_ghost/MW;
     THERMdll(T_cal,rho_cal,x_cal,p_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,hjt);
-	   
-    sos1 = w_cal;
+	   	
+    if (w_cal = w_cal) sos1 = w_cal;
+    else if (w_cal != w_cal) sos1 = sos1;	
 
     T_cal = T2_ghost, rho_cal = rho2_ghost/MW;
     THERMdll(T_cal,rho_cal,x_cal,p_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,hjt);
 
-    sos2 = w_cal;
+    if (w_cal = w_cal) sos2 = w_cal;
+    else if (w_cal != w_cal) sos2 = sos2;	
 
     // bulk speed of sound (weighted against volume fractions)
     if (alpha1_ghost > 0.0 && alpha1_ghost < 1.0)
@@ -85,6 +87,8 @@
     else if (alpha1_ghost == 1.0) sos = sos1;
     else if (alpha1_ghost == 0.0) sos = sos2;
   	
+    Info << "sound speed =" << sos1 << nl << endl;	
+    Info << "sound speed =" << sos2 << nl << endl;	
     Info << "sound speed =" << sos << nl << endl;  
     //----------------------------------------------------------			
 	
@@ -98,7 +102,11 @@
 	  	scalar wave1 = ((U_ghost-sos)/xDimDim[1])*(p_ghost-p_interior-rho_ghost*sos*(U_ghost-U_interior));
 	  	scalar wave2 = (U_ghost/xDimDim[1])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
 	  	scalar wave3 = ((U_ghost+sos)/xDimDim[1])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
-	  
+
+		Info << "wave1 = " << wave1 << nl << endl;
+		Info << "wave2 = " << wave2 << nl << endl;	  
+		Info << "wave3 = " << wave3 << nl << endl;
+
       		scalar DpDt = -0.5*(wave3+wave1);
 	  	scalar DuDt = -0.5/(rho_ghost*sos)*(wave3-wave1);
 	  	scalar DrhoDt = 1.0/(sos*sos)*(DpDt+wave2);
@@ -113,12 +121,15 @@
 	  	scalar wave3 = ((U_ghost+sos)/xDimDim[1])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
     		scalar wave1 = -wave3;
   
-    
-	  	scalar DpDt = -0.5*(wave3+wave1);
+		Info << "wave1 = " << wave1 << nl << endl;
+		Info << "wave2 = " << wave2 << nl << endl;	  
+		Info << "wave3 = " << wave3 << nl << endl;  
+	  	
+		scalar DpDt = -0.5*(wave3+wave1);
 	  	scalar DuDt = -0.5/(rho_ghost*sos)*(wave3-wave1);
 	  	scalar DrhoDt = 1.0/(sos*sos)*(DpDt+wave2);
 
-  		p_ghost_update = scalar(100000); //p_ghost + DpDt*dt;
+  		p_ghost_update = scalar(1000000); //p_ghost + DpDt*dt;
 	  	U_ghost_update = U_ghost + DuDt*dt;
 	  	rho_ghost_update = rho_ghost + DrhoDt*dt;
     } 

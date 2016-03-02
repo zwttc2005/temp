@@ -142,6 +142,7 @@
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
               - (fvOptions(alpha1, rho1)&rho1)
 	      + (alpha1*rho1*mag(U1))*areaSource // change in area source term
+	      - gammaV
               - fvc::Sp(fvc::ddt(alpha1) + fvc::div(alphaPhi1), rho1)
             )/rho1
           + (alpha1/rho1)*correction
@@ -157,6 +158,7 @@
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
               - (fvOptions(alpha2, rho2)&rho2)
 	      + (alpha2*rho2*mag(U2))*areaSource // change in area source term
+	      - gammaL
               - fvc::Sp(fvc::ddt(alpha2) + fvc::div(alphaPhi2), rho2)
 
             )/rho2
@@ -175,6 +177,7 @@
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
               - (fvOptions(alpha1, rho1)&rho1)
 	      + (alpha1*rho1*mag(U1))*areaSource
+	      - gammaV
               - fvc::Sp(fvc::ddt(alpha1) + fvc::div(alphaPhi1), rho1)
             )/rho1
           + (alpha1*psi1/rho1)*correction(fvm::ddt(p));
@@ -184,6 +187,7 @@
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
               - (fvOptions(alpha2, rho2)&rho2)
 	      + (alpha2*rho2*mag(U2))*areaSource
+	      - gammaL
               - fvc::Sp(fvc::ddt(alpha2) + fvc::div(alphaPhi2), rho2)
             )/rho2
           + (alpha2*psi2/rho2)*correction(fvm::ddt(p));
@@ -277,7 +281,7 @@
     
     p = max(p, pMin);
     
-    Info << "p_pEqu" << p_test << nl << endl; 
+    Info << "p_pEqu" << p[999] << nl << endl; 
     
     Info << "p_cell" << p[998] << nl << endl;
     

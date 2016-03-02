@@ -115,7 +115,15 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::cp
 ) const
 {    
     scalar cp_;	 
-	
+    scalar rhogas;
+        
+    scalar Tc_ = 304.13;
+    scalar Vc_ = 0.0021386/this->W();
+    scalar Pc_ = 7377300;
+    scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);	
+    scalar omega_ = 0.22394;
+
+
     // Load the shared library
     //-------------------------------------------------------------------
     
@@ -142,20 +150,82 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::cp
 	flag++;
     }
     //-------------------------------------------------------------------		
+    {
+    	scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
+    	scalar b = 0.07780*this->R()*Tc_/Pc_;
+    	scalar Tr = T/Tc_;
+
+    	scalar alpha =
+        	sqr
+        	(
+          	1.0
+          	+ (0.37464 + 1.54226*omega_- 0.26992*sqr(omega_))
+          	* (1.0 - sqrt(Tr))
+        	);
+
+    	scalar B = b*p/(this->R()*T);
+    	scalar A = a*alpha*p/sqr(this->R()*T);
+
+    	scalar a2 = B - 1.0;
+    	scalar a1 = A - 2.0*B - 3.0*sqr(B);
+    	scalar a0 = -A*B + sqr(B) + pow3(B);
+
+    	scalar Q = (3.0*a1 - a2*a2)/9.0;
+    	scalar Rl = (9.0*a2*a1 - 27.0*a0 - 2.0*a2*a2*a2)/54;
+
+    	scalar Q3 = Q*Q*Q;
+    	scalar D = Q3 + Rl*Rl;
+
+    	scalar root = -1.0;
+	
+    	if (D <= 0.0)
+    	{
+        	scalar th = ::acos(Rl/sqrt(-Q3));
+        	scalar qm = 2.0*sqrt(-Q);
+       	 	scalar r1 = qm*cos(th/3.0) - a2/3.0;
+        	scalar r2 = qm*cos((th + 2.0*constant::mathematical::pi)/3.0) - a2/3.0;
+        	scalar r3 = qm*cos((th + 4.0*constant::mathematical::pi)/3.0) - a2/3.0;
+
+        	root = max(r1, max(r2, r3));
+		rhogas = p/(root*this->R()*T);
+    	}
+    	else
+   	{
+        	//one root is real
+        	scalar D05 = sqrt(D);
+        	scalar S = pow(Rl + D05, 1.0/3.0);
+        	scalar Tl = 0;
+        	if (D05 > Rl)
+       	 	{
+            		Tl = -pow(mag(Rl - D05), 1.0/3.0);
+        	}
+        	else
+        	{
+            		Tl = pow(Rl - D05, 1.0/3.0);
+        	}
+        
+		root = S + Tl - a2/3.0;
+		rhogas = p/(root*this->R()*T);
+    	}
+    }	
+    //-------------------------------------------------------------------------
     
     {
-    	double Tgas,rhogas,pgas,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
+    	double Tgas,pgas,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
     	double xgas[]={1.0};
-    	long kph = -2, kguess = 0; // integer required for TP-calculation
+    	//long kph = -2, kguess = 0; // integer required for TP-calculation
 
     	Tgas = T;        //K
-    	pgas = p/1000.0; //kpa
+	rhogas = rhogas/this->W();
+    	//pgas = p/1000.0; //kpa
 
         
-	TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);	
-		
-    	THERMdll(Tgas,rhogas,xgas,pgas,e,h,s,Cv,Cp,w,hjt);
+	//TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);	
 	
+    	//THERMdll(Tgas,rhogas,xgas,pgas,e,h,s,Cv,Cp,w,hjt);
+	
+	CVCPdll(Tgas,rhogas,xgas,Cv,Cp);
+
     	if (p < 2500000)
     	{
       		//Info << "internal density = " << rhogas << nl << endl;
@@ -188,6 +258,13 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::hs
 ) const
 {
     scalar hs_;
+    scalar rhogas;	
+
+    scalar Tc_ = 304.13;
+    scalar Vc_ = 0.0021386/this->W();
+    scalar Pc_ = 7377300;
+    scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);	
+    scalar omega_ = 0.22394;
 
     // Load the shared library
     //-------------------------------------------------------------------
@@ -215,16 +292,83 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::hs
 	flag++;
     }
     //-------------------------------------------------------------------		
-    
     {
-    	double Tgas,pgas,rhogas,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
+    	scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
+    	scalar b = 0.07780*this->R()*Tc_/Pc_;
+    	scalar Tr = T/Tc_;
+
+    	scalar alpha =
+        	sqr
+        	(
+          	1.0
+          	+ (0.37464 + 1.54226*omega_- 0.26992*sqr(omega_))
+          	* (1.0 - sqrt(Tr))
+        	);
+
+    	scalar B = b*p/(this->R()*T);
+    	scalar A = a*alpha*p/sqr(this->R()*T);
+
+    	scalar a2 = B - 1.0;
+    	scalar a1 = A - 2.0*B - 3.0*sqr(B);
+    	scalar a0 = -A*B + sqr(B) + pow3(B);
+
+    	scalar Q = (3.0*a1 - a2*a2)/9.0;
+    	scalar Rl = (9.0*a2*a1 - 27.0*a0 - 2.0*a2*a2*a2)/54;
+
+    	scalar Q3 = Q*Q*Q;
+    	scalar D = Q3 + Rl*Rl;
+
+    	scalar root = -1.0;
+	
+    	if (D <= 0.0)
+    	{
+        	scalar th = ::acos(Rl/sqrt(-Q3));
+        	scalar qm = 2.0*sqrt(-Q);
+       	 	scalar r1 = qm*cos(th/3.0) - a2/3.0;
+        	scalar r2 = qm*cos((th + 2.0*constant::mathematical::pi)/3.0) - a2/3.0;
+        	scalar r3 = qm*cos((th + 4.0*constant::mathematical::pi)/3.0) - a2/3.0;
+
+        	root = max(r1, max(r2, r3));
+		rhogas = p/(root*this->R()*T);
+			
+    	}
+    	else
+   	{
+        	//one root is real
+        	scalar D05 = sqrt(D);
+        	scalar S = pow(Rl + D05, 1.0/3.0);
+        	scalar Tl = 0;
+        	if (D05 > Rl)
+       	 	{
+            		Tl = -pow(mag(Rl - D05), 1.0/3.0);
+        	}
+        	else
+        	{
+            		Tl = pow(Rl - D05, 1.0/3.0);
+        	}
+        
+		root = S + Tl - a2/3.0;
+    		rhogas = p/(root*this->R()*T);
+	}
+    }
+	        
+    {
+    	double Tgas,pgas,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
     	double xgas[]={1.0};
     	long kph = -2, kguess = 0;
     
     	Tgas = T;
-    	pgas = p/1000.0;
-    	TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);
-    	THERMdll(Tgas,rhogas,xgas,pgas,e,h,s,Cv,Cp,w,hjt);
+    	//pgas = p/1000.0;
+	rhogas = rhogas/this->W();
+    	//TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);
+    	//THERMdll(Tgas,rhogas,xgas,pgas,e,h,s,Cv,Cp,w,hjt);
+
+	//Info << "density = " << rhogas << nl << endl;
+	//Info << "temperature = " << T << nl << endl;
+	//Info << "pressure = " << p << nl << endl;
+	//Info << "R = " << this->R() << nl << endl; 
+	
+	ENTHALdll(Tgas,rhogas,xgas,h);
 
 	hs_ = h*1000.0;
     	
