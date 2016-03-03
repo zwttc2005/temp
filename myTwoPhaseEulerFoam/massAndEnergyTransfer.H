@@ -44,66 +44,90 @@ for(i = 0; i < celln+1; i++)
 	rhoLiqS = rho2[i];
 	pS = p[i];
 
-	qV[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatV-hVapS);
-	qL[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatL-hLiqS);
 
-	// mass transfer calculation
-	qVs = qV[i];
-	qLs = qL[i];
+	if (alpha1[i] > 0.1 && alpha2[i] > 0.1) 
+	{	
+		qV[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatV-hVapS);
+		qL[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatL-hLiqS);
+
+		// mass transfer calculation
+		qVs = qV[i];
+		qLs = qL[i];
 	
-	gammaV[i] = -(qVs+qLs)/(hSatV-hSatL);
-	gammaL[i] = -gammaV[i];
+		gammaV[i] = -(qVs+qLs)/(hSatV-hSatL);
+		gammaL[i] = -gammaV[i];
 	
-	// private doubles
-	//scalar mDotV, mDotL;
-	//if (pS > pSatV) mDotV = (Ctou/tou)*(-alpha1[i]*rhoVapS*((pS-pSatV)/pSatV));
-	//else mDotV = 0.0;
-
-	//if (pSatL > pS) mDotL = (Ctou/tou)*(alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL));
-	//else mDotL = 0.0;
-
-	//if (TvapS>300.0 || hVapS > hSatV)
-	//{
-		//mDotV = 0.0;
-	//}
-
-	//if (TliqS>300.0 || hLiqS < hSatL)
-	//{
-		//mDotL = 0.0;
-	//}
-
-	//gammaV[i] = mDotL-mDotV;
-	//gammaL[i] = - gammaV[i]; 
-
+		if (gammaVs >= 0.0)
+		{
+			//qV[i] = gammaVs*hSatV;
+			//qL[i] = gammaLs*hSatV;
 		
-	// heat transfer calculation 
-	//gammaVs = gammaV[i];
-	//gammaLs = gammaL[i];
+			gammaVu[i] = gammaV[i]*mag(U1[i]);
+			gammaLu[i] = gammaL[i]*mag(U1[i]);
+	
+		}
+		else if (gammaVs < 0.0)
+		{
+			//qV[i] = gammaVs*hSatL;
+			//qL[i] = gammaLs*hSatL;
 
-	if (gammaVs >= 0.0)
-	{
-		//qV[i] = gammaVs*hSatV;
-		//qL[i] = gammaLs*hSatV;
+			gammaVu[i] = gammaV[i]*mag(U2[i]);
+			gammaLu[i] = gammaL[i]*mag(U2[i]);
+		}
+	}
+	else
+	{ 
+		// private doubles
+		scalar mDotV, mDotL;
+
+		// mass trasnfer 
+		if (TvapS < 300.0 && alpha1[i] > 0.0 && pS > pSatV && hVapS < hSatV)
+		{
+			mDotV = (Ctou/0.001)*(alpha1[i]*rhoVapS*((pS-pSatV)/pSatV)); // condensation	
+		}  
+		else
+		{
+			mDotV = 0.0;
+		}
+
+		if (TliqS < 300.0 && alpha2[i] > 0.0 && pSatL > pS && hLiqS > hSatL) 
+		{
+			mDotL = (Ctou/0.001)*(alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL)); // evaporation 
+		}
+		else
+		{
+			mDotL = 0.0;
+		}
 		
-		gammaVu[i] = gammaV[i]*mag(U1[i]);
-		gammaLu[i] = gammaL[i]*mag(U1[i]);
-	
-	}
-	else if (gammaVs < 0.0)
-	{
-		//qV[i] = gammaVs*hSatL;
-		//qL[i] = gammaLs*hSatL;
+		gammaV[i] = mDotL-mDotV;
+		gammaL[i] = - gammaV[i];
+		gammaVs = gammaV[i];
+		gammaLs = gammaL[i]; 
 
-		gammaVu[i] = gammaV[i]*mag(U2[i]);
-		gammaLu[i] = gammaL[i]*mag(U2[i]);
-	}
+		if (gammaVs >= 0.0)
+		{
+			qV[i] = gammaVs*hSatV;
+			qL[i] = gammaLs*hSatV;
+		
+			gammaVu[i] = gammaV[i]*mag(U1[i]);
+			gammaLu[i] = gammaL[i]*mag(U1[i]);
+	
+		}
+		else if (gammaVs < 0.0)
+		{
+			qV[i] = gammaVs*hSatL;
+			qL[i] = gammaLs*hSatL;
+
+			gammaVu[i] = gammaV[i]*mag(U2[i]);
+			gammaLu[i] = gammaL[i]*mag(U2[i]);
+		}
+
+	}		
 
 	
-
-	
-	//qL[i] = scalar(0);
-	//gammaL[i] = scalar(0);
-	//gammaLu[i] = scalar(0);
+		//qL[i] = scalar(0);
+		//gammaL[i] = scalar(0);
+		//gammaLu[i] = scalar(0);
 }
     
 
