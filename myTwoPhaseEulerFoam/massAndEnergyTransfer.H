@@ -80,10 +80,17 @@ for(i = 0; i < celln+1; i++)
 		// private doubles
 		scalar mDotV, mDotL;
 
-		// mass trasnfer 
+		// mass trasnfer
+
+		if (i == 999) Info << "T_999 " << TliqS << nl << endl;
+		if (i == 999) Info << "Delta " << pSatL << nl << endl;
+		if (i == 999) Info << "liquid " << alpha2[i] << nl << endl;
+
 		if (TvapS < 300.0 && alpha1[i] > 0.0 && pS > pSatV && hVapS < hSatV)
 		{
 			mDotV = (Ctou/0.001)*(alpha1[i]*rhoVapS*((pS-pSatV)/pSatV)); // condensation	
+			
+			Info << "massflux" << mDotV << nl << endl;
 		}  
 		else
 		{

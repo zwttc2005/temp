@@ -22,7 +22,7 @@ boundaryField
 {
     sideLeft
     {
-        type            zeroGradient;//symmetryPlane;
+        type            symmetryPlane;
     }
 
     sideRight

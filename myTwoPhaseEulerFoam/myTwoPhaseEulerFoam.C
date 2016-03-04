@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	#include "massAndEnergyTransfer.H"
 	
 	// update boundary conditions (NSCBC)
-	#include "NSCBC.H"
+	//#include "NSCBC.H"
 	
 	// runtime time output    
 	runTime++;
@@ -118,19 +118,25 @@ int main(int argc, char *argv[])
             fluid.solve();
             fluid.correct();
 
-            // update boundary conditions
-	    p.boundaryField()[patchID] == p_ghost_update;
+	    // interface mass and heat transfer 
+            //#include "massAndEnergyTransfer.H"
+
+            
+	    // update boundary conditions
+	    //p.boundaryField()[patchID] == p_ghost_update;
             //U1.boundaryField()[patchID] == vector(U_ghost_update,0,0);
-            //U2.boundaryField()[patchID] == vector(0,0,0); //vector(U_ghost_update,0,0);
+            //U2.boundaryField()[patchID] == vector(U_ghost_update,0,0);
             //thermo1.T().boundaryField()[patchID] == T_ghost_update;
             //thermo2.T().boundaryField()[patchID] == T_ghost_update;           
-	          
+	    //alpha1.boundaryField()[patchID] == alpha1_ghost_update;
+	    //alpha2.boundaryField()[patchID] == 1.0 - alpha1_ghost_update;
+
+
             //p[celln] = p_ghost_update;
             //U1[celln] = vector(U_ghost_update,0,0);
             //U2[celln] = vector(U_ghost_update,0,0);
             //thermo1.T()[celln] = T_ghost_update;
             //thermo2.T()[celln] = T_ghost_update;
-
 
 
             U_bulk = mag(alpha1*U1+alpha2*U2);
@@ -156,7 +162,7 @@ int main(int argc, char *argv[])
 			
             #include "UEqns.H"
 
-	          U_bulk = mag(alpha1*U1+alpha2*U2);                     // update velocity field                   				
+	    U_bulk = mag(alpha1*U1+alpha2*U2);                     // update velocity field                   				
        
             #include "EEqns.H"
 

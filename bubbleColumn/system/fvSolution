@@ -77,6 +77,9 @@ PIMPLE
     nOuterCorrectors 3;
     nCorrectors      1;
     nNonOrthogonalCorrectors 0; 
+	
+    pRefCell            0; // necessary for zeroGradient? under investigation 
+    pRefValue           0;
 }
 
 relaxationFactors

@@ -22,15 +22,17 @@ boundaryField
 {
     sideLeft
     {
-        type               fixedValue; //symmetryPlane;
-	value              uniform (0 0 0);
+        type                 symmetryPlane; //fixedValue; //symmetryPlane;
+	//value              uniform (0 0 0);
     }
     sideRight
     {
-        type               advective;
-        phi                phi;
-        fieldInf           (400 0 0);
-        lInf               10;  
+        type                 zeroGradient;
+
+	//type               advective;
+        //phi                phi;
+	//fieldInf           (400 0 0);
+        //lInf               10;  
         //type               zeroGradient;
       	//type               fixedValue; 
         //value              uniform (0 0 0); 

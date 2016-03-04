@@ -96,7 +96,6 @@
     );
 
     // Update the fixedFluxPressure BCs to ensure flux consistency
-    //Info << "p_pEqu" << p_test << nl << endl; 
     setSnGrad<fixedFluxPressureFvPatchScalarField>
     (
         p.boundaryField(),
@@ -113,7 +112,6 @@
     );
     
     //
-    //Info << "p_pEqu" << p_test << nl << endl; 
     
     tmp<fvScalarMatrix> pEqnComp1;
     tmp<fvScalarMatrix> pEqnComp2;
@@ -194,14 +192,8 @@
     }
 
     
-    //Info << "p_pEqu" << p_test << nl << endl; 
-    
-    
     // Cache p prior to solve for density update
     volScalarField p_0(p);
-
-    
-    //Info << "p_pEqu" << p_test << nl << endl;
 
     
     while (pimple.correctNonOrthogonal())
@@ -277,13 +269,12 @@
         }
     }
     
-    //Info << "p_pEqu" << p_test << nl << endl; 
-    
+  
     p = max(p, pMin);
     
-    Info << "p_pEqu" << p[999] << nl << endl; 
+    Info << "p_pEqu" << p[celln] << nl << endl; 
     
-    Info << "p_cell" << p[998] << nl << endl;
+    Info << "p_cell" << p[celln-1] << nl << endl;
     
     // Update densities from change in p
    

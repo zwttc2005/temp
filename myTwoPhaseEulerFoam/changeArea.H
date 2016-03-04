@@ -41,9 +41,9 @@
     {
     	if (celli >= (celln-100) && celli < (celln))
 	{
-		celld = (double) (celli-(celln-100))/50;  
+		celld = (double) (celli-(celln-100))/100;  
 		scaleFactor = Foam::tanh(celld);	
-		flowArea[celli] = flowArea[(celln-100)]-flowArea[(celln-100)]*scalar(scaleFactor);	
+		flowArea[celli] = flowArea[(celln-100)]+flowArea[(celln-100)]*scalar(scaleFactor);	
 	}
 	//else if (celli > (celln-50) && celli < celln)
 	//{
@@ -51,9 +51,9 @@
 		//scaleFactor = Foam::tanh(celld);
 		//flowArea[celli] =flowArea[(celln-50)]+5.0*scalar(scaleFactor);//flowArea[(celln-50)]*scalar(scaleFactor);
 	//}
-	else if (celli >= celln)
+	else if (celli >= celln-100)
 	{
-		flowArea[celli] = flowArea[(celln-1)];
+		flowArea[celli] = flowArea[(celln-100)];
 	}
     	
     }
@@ -86,7 +86,7 @@
 	{
 		areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
 	}
-	else if (celli >= celln)
+	else if (celli >= celln-100)
 	{	
 		areaSource[celli] = 0;
 	}	

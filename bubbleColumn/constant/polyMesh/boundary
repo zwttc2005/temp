@@ -19,7 +19,8 @@ FoamFile
 (
     sideLeft
     {
-        type            patch;
+        type            symmetryPlane;
+        inGroups        1(symmetryPlane);
         nFaces          1;
         startFace       999;
     }

@@ -5,19 +5,19 @@
 	// fixed value type 
 	//-----------------------------------------------------------		
 	label patchID = mesh.boundaryMesh().findPatchID("sideRight");
-	//p.boundaryField()[patchID] == scalar(1000000);
-	const scalarField& p_test = p.boundaryField()[patchID];
+	
+	//const scalarField& p_test = p.boundaryField()[patchID];
 	    
 	// make a reference to cell adjacent to boundary patch 
   	scalar p_interior = p[(celln)];
-	scalar U_interior = mag(U[(celln)]);
+	scalar U_interior = mag(U1[(celln)])*alpha1[celln]+mag(U2[celln])*alpha2[celln];
  	scalar rho_interior = alpha1[(celln)]*rho1[(celln)]+alpha2[(celln)]*rho2[(celln)];
 
 	Info << "pressure1 = " << p_interior << nl << endl;	
 	Info << "velocity1 = " << U_interior << nl << endl;
 	Info << "density1 = " << rho_interior << nl << endl;	
  	Info << "temperatue1 = " << thermo1.T()[celln] << nl << endl;
-	Info << "enthalpy1 = " << thermo1.he()[celln] << nl << endl; 
+	//Info << "enthalpy1 = " << thermo1.he()[celln] << nl << endl; 
 
   	// declare the properties which is calculated based on characteristic
   	// analysis
@@ -30,14 +30,14 @@
 	if (runTime.time().value() == 0.0)
 	{	
 	    U_ghost = scalar(0);
-	    p_ghost = scalar(500000);
-	    rho_ghost = scalar(20.199);
-      	    rho1_ghost = rho_ghost;
-      	    rho2_ghost = scalar(0);
-      	    T1_ghost = scalar(280);
-      	    T2_ghost = scalar(280);
-            alpha1_ghost = scalar(1);
-            alpha2_ghost = scalar(0);
+	    p_ghost = scalar(599000);
+	    rho_ghost = scalar(33.295);
+      	    rho1_ghost = scalar(33.295);
+      	    rho2_ghost = scalar(1088.9);
+      	    T1_ghost = scalar(240.00);
+      	    T2_ghost = scalar(240.00);
+            alpha1_ghost = scalar(0.1)*(rho_ghost/rho1_ghost);
+            alpha2_ghost = scalar(1.0) - alpha1_ghost;
 	}
   	else
   	{
@@ -46,15 +46,19 @@
 	    rho_ghost = rho_ghost_update;   //alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
 	    rho1_ghost = rho1.boundaryField()[patchID][0];
       	    rho2_ghost = rho2.boundaryField()[patchID][0];
-      	    T1_ghost = thermo1.T().boundaryField()[patchID][0]; 
-      	    T2_ghost = thermo2.T().boundaryField()[patchID][0];
-      	    alpha1_ghost = alpha1.boundaryField()[patchID][0];
-      	    alpha2_ghost = alpha2.boundaryField()[patchID][0];
+      	    T1_ghost = T_ghost_update;      //thermo1.T().boundaryField()[patchID][0]; 
+      	    T2_ghost = T_ghost_update;      //thermo2.T().boundaryField()[patchID][0];
+      	    alpha1_ghost = alpha1_ghost_update; 
+      	    alpha2_ghost = 1.0 - alpha1_ghost;  //alpha2.boundaryField()[patchID][0];
   	}
 	
-    	  Info << "pressure2 = " << p_ghost << nl << endl;	
-	  Info << "velocity2 = " << U_ghost << nl << endl;
-	  Info << "density2 = " << rho_ghost << nl << endl;	
+    	  Info << "pressure2 = " << p.boundaryField()[patchID][0] << nl << endl;
+	  Info << "velocity2 = " << U1.boundaryField()[patchID][0] << nl << endl;
+	  Info << "velocity2 = " << U2.boundaryField()[patchID][0] << nl << endl;
+	  Info << "densityVap2 = " << rho1.boundaryField()[patchID][0] << nl << endl;
+	  Info << "densityLiq2 = " << rho2.boundaryField()[patchID][0] << nl << endl;	
+          Info << "temperature2 = " << thermo2.T().boundaryField()[patchID][0] << nl << endl;			
+
 
     //
     // obtaining the speed of sound      
@@ -97,7 +101,7 @@
     scalar dt = runTime.deltaT().value();
 		
     // wave amplitude calculation
-    if (U_ghost > sos)
+    if (U_ghost > 0.0)
     {
 	  	scalar wave1 = ((U_ghost-sos)/xDimDim[1])*(p_ghost-p_interior-rho_ghost*sos*(U_ghost-U_interior));
 	  	scalar wave2 = (U_ghost/xDimDim[1])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
@@ -129,7 +133,7 @@
 	  	scalar DuDt = -0.5/(rho_ghost*sos)*(wave3-wave1);
 	  	scalar DrhoDt = 1.0/(sos*sos)*(DpDt+wave2);
 
-  		p_ghost_update = scalar(500000); //p_ghost + DpDt*dt;
+  		p_ghost_update = scalar(599000); //p_ghost + DpDt*dt;
 	  	U_ghost_update = U_ghost + DuDt*dt;
 	  	rho_ghost_update = rho_ghost + DrhoDt*dt;
     } 
@@ -137,33 +141,29 @@
 
 
   	// singlephase or twophase PD-flash calculation
-  	//p_cal = p_ghost_update/1000.0; // kpa
-  	//rho_cal = rho_ghost_update/MW; // mol/L
-  	//PDFLSHdll(p_cal,rho_cal,x_cal,T_cal,rholiq_cal,rhovap_cal,xliq_cal,xvap_cal,q_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,ierr,herr,255);
+ 	p_cal = p_ghost_update/1000.0; // kpa
+  	rho_cal = rho_ghost_update/MW; // mol/L
+  	PDFLSHdll(p_cal,rho_cal,x_cal,T_cal,rholiq_cal,rhovap_cal,xliq_cal,xvap_cal,q_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,ierr,herr,255);
    
-  	//T_ghost_update = T_cal;
-    	//rho1_ghost_update = rhovap_cal*MW;
-  	//rho2_ghost_update = rholiq_cal*MW;
-    	//alpha1_ghost_update;
+	T_ghost_update = T_cal;
   
-  	//if (q_cal >= 0.0 && q_cal <= 1.0) 
-  	//{
-    		//alpha1_ghost_update = q_cal*(rho_cal/rhovap_cal);
-  	//}
-  	//else if (q_cal > 1.0)
-  	//{
-    		//alpha1_ghost_update = 1.0;
-  	//}
-  	//else 
-  	//{
-    		//alpha1_ghost_update = 0.0;
-  	//}
-
+  	if (q_cal >= 0.0 && q_cal <= 1.0) 
+  	{
+    		alpha1_ghost_update = q_cal*(rho_cal/rhovap_cal);
+  	}
+  	else if (q_cal > 1.0)
+  	{
+    		alpha1_ghost_update = 1.0;
+  	}
+  	else 
+  	{
+    		alpha1_ghost_update = 0.0;
+  	}
 
   	Info << "p_ghost_update = " << p_ghost_update << nl << endl;	
 	Info << "U_ghost_update = " << U_ghost_update << nl << endl;
 	Info << "rho_ghost_update = " << rho_ghost_update << nl << endl;
-	//Info << "T_ghost_update = " << T_ghost_update << nl << endl;
-  	//Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;
+	Info << "T_ghost_update = " << T_ghost_update << nl << endl;
+  	Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;
   
   //-----------------------------------------------------------
