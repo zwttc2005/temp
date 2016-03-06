@@ -46,6 +46,9 @@ namespace Foam
                          Class heThermo Declaration
 \*---------------------------------------------------------------------------*/
 
+
+//jhkjhighihggigugiu
+  
 template<class BasicThermo, class MixtureType>
 class heThermo
 :

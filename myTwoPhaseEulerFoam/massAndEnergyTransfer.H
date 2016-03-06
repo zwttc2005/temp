@@ -5,7 +5,7 @@
 //
 //-----------------------------------------------------------------------------\\
 
-// define problem specific constants
+// define problem specific constant
 scalar Ctou = 1.0, tou = 0.00001;
 
 // hSatV, hSatL
@@ -45,7 +45,7 @@ for(i = 0; i < celln+1; i++)
 	pS = p[i];
 
 
-	if (alpha1[i] > 0.1 && alpha2[i] > 0.1) 
+	if (alpha1[i] > 0.0 && alpha2[i] > 0.0) 
 	{	
 		qV[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatV-hVapS);
 		qL[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatL-hLiqS);
