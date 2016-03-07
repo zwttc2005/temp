@@ -22,27 +22,27 @@ FoamFile
         type            symmetryPlane;
         inGroups        1(symmetryPlane);
         nFaces          1;
-        startFace       999;
+        startFace       199;
     }
     sideRight
     {
         type            patch;
         nFaces          1;
-        startFace       1000;
+        startFace       200;
     }
     topbottom
     {
         type            empty;
         inGroups        1(empty);
-        nFaces          2000;
-        startFace       1001;
+        nFaces          400;
+        startFace       201;
     }
     frontback
     {
         type            empty;
         inGroups        1(empty);
-        nFaces          2000;
-        startFace       3001;
+        nFaces          400;
+        startFace       601;
     }
 )
 

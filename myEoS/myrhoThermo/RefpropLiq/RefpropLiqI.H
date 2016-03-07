@@ -147,44 +147,48 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::Z
     scalar T
 ) const
 {
-
+	
     // Load the shared library
     //-------------------------------------------------------------------
     
-    //static int flag = 0;
-    //long ierr = 0;
-    //char herr[255];
+    static int flag = 0;
+    long ierr = 0;
+    char herr[255];
 
-    //if (flag == 0)
-    //{
-    	//std::string err;
-    	//bool loaded_REFPROP = load_REFPROP(err);
-    	//long nc = 1; 
-    	//char hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
+    if (flag == 0)
+    {
+    	std::string err;
+    	bool loaded_REFPROP = load_REFPROP(err);
+    	long nc = 1; 
+    	char hfld[] = "CO2.FLD", hhmx[] = "HMX.BNC", href[] = "DEF";
 
-    	//SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
+    	SETUPdll(nc,hfld,hhmx,href,ierr,herr,10000,255,3,255);
  
-    	//if (ierr != 0)
-    	//{
-    		//Info<< "error massage:" << herr << nl << endl;  
-   	//}
+    	if (ierr != 0)
+    	{
+    		Info<< "error massage:" << herr << nl << endl;  
+   	}
     	
-	//flag++;
-    //}
+	flag++;
+    }
     //-------------------------------------------------------------------
 
 
-    //long kph = -1, kguess = 0;
-    //double Tliq = T, pliq = p/1000.0,xliq[] = {1.0},rholiq = NULL;
-    //TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
-
-    //Info << "density =" << rholiq << nl << endl;
-
-    //scalar root = p*(1.0/(rholiq*1000.0))/(8.314*T); 
+    long kph = -1, kguess = 0;
+    double Tliq = T, pliq = p/1000.0,xliq[] = {1.0},rholiq = NULL;
+    TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
     
-    scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
+
+    scalar root = p*(1.0/(rholiq*1000.0))/(8.314*T); 
+    
+    /*scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
     scalar b = 0.07780*this->R()*Tc_/Pc_;
     scalar Tr = T/Tc_;
+
+    // check if roots can be found for gas phase compressibility 	
+    scalar R1, R2, R3;	
+    scalar test1, test2, test3, test4, test5, test6;
+    // 	
 
     scalar alpha =
         sqr
@@ -236,6 +240,19 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::Z
 
         root = S + Tl - a2/3.0;
     }
+
+    // roots are not found 
+    if (root != root)
+    {
+	    Info << "root1 =" << R1 << nl << endl;
+	    Info << "root2 =" << R2 << nl << endl;
+	    Info << "root3 =" << R3 << nl << endl;
+	    Info << "D =" << test1 << nl << endl;
+	    Info << "Rl =" << test2 << nl << endl;
+	    Info << "a2 =" << test3 << nl << endl;
+	    Info << "Tl =" << test4 << nl << endl;
+	    Info << "S =" << test5 << nl << endl;
+    }*/
 
     return root;
 }

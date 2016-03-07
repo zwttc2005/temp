@@ -5,8 +5,9 @@
 //
 //-----------------------------------------------------------------------------\\
 
-// define problem specific constants
-scalar Ctou = 1.0, tou = 0.00001;
+// define problem specific constant
+
+scalar Ctou = 1.0, tou = 0.00001; //0.00001;
 
 // hSatV, hSatL
 // hSatV = -0.000508*Foam::pow (T,4)+0.402133*Foam::pow(T,3)-121.645905*Foam::pow(T,2)+17114.230257*T-537903.887493;
@@ -45,7 +46,7 @@ for(i = 0; i < celln+1; i++)
 	pS = p[i];
 
 
-	if (alpha1[i] > 0.1 && alpha2[i] > 0.1) 
+	if (alpha1[i] > 0.0 && alpha2[i] > 0.0) 
 	{	
 		qV[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatV-hVapS);
 		qL[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatL-hLiqS);
@@ -82,24 +83,24 @@ for(i = 0; i < celln+1; i++)
 
 		// mass trasnfer
 
-		if (i == 999) Info << "T_999 " << TliqS << nl << endl;
-		if (i == 999) Info << "Delta " << pSatL << nl << endl;
-		if (i == 999) Info << "liquid " << alpha2[i] << nl << endl;
+		//if (i == 999) Info << "T_999 " << TliqS << nl << endl;
+		//if (i == 999) Info << "Delta " << pSatL << nl << endl;
+		//if (i == 999) Info << "liquid " << alpha2[i] << nl << endl;
 
 		if (TvapS < 300.0 && alpha1[i] > 0.0 && pS > pSatV && hVapS < hSatV)
 		{
-			mDotV = (Ctou/0.001)*(alpha1[i]*rhoVapS*((pS-pSatV)/pSatV)); // condensation	
+			mDotV = (Ctou/tou)*(alpha1[i]*rhoVapS*((pS-pSatV)/pSatV)); // condensation	
 			
-			Info << "massflux" << mDotV << nl << endl;
+			//Info << "massflux" << mDotV << nl << endl;
 		}  
 		else
 		{
 			mDotV = 0.0;
 		}
 
-		if (TliqS < 300.0 && alpha2[i] > 0.0 && pSatL > pS && hLiqS > hSatL) 
+		if (TliqS < 300.0 && alpha2[i] > 0.0 && pSatL > pS && hLiqS > hSatL)
 		{
-			mDotL = (Ctou/0.001)*(alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL)); // evaporation 
+			mDotL = (Ctou/tou)*(alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL)); // evaporation 
 		}
 		else
 		{
@@ -132,9 +133,12 @@ for(i = 0; i < celln+1; i++)
 	}		
 
 	
-		//qL[i] = scalar(0);
-		//gammaL[i] = scalar(0);
-		//gammaLu[i] = scalar(0);
+	/*qL[i] = scalar(0);
+	gammaL[i] = scalar(0);
+	gammaLu[i] = scalar(0);
+	qV[i] = scalar(0);
+	gammaV[i] = scalar(0);
+	gammaVu[i] = scalar(0);*/
 }
     
 
@@ -175,9 +179,9 @@ for(i = 0; i < celln+1; i++)
     	//}
 //}
 
-Info << "gammaL = " << gammaL[999] << nl << endl;
-Info << "qL = " << qL[999] << nl << endl;
-Info << "hLiqS = " << hLiq[999] << nl << endl;
+Info << "gammaL = " << gammaL[celln] << nl << endl;
+Info << "qL = " << qL[celln] << nl << endl;
+Info << "hLiqS = " << hLiq[celln] << nl << endl;
 Info << "hSatL = " << hSatL << nl << endl;
 
 

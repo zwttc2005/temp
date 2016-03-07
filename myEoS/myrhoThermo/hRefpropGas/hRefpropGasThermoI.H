@@ -117,11 +117,11 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::cp
     scalar cp_;	 
     scalar rhogas;
         
-    scalar Tc_ = 304.13;
+    /*scalar Tc_ = 304.13;
     scalar Vc_ = 0.0021386/this->W();
     scalar Pc_ = 7377300;
     scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);	
-    scalar omega_ = 0.22394;
+    scalar omega_ = 0.22394;*/
 
 
     // Load the shared library
@@ -150,7 +150,7 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::cp
 	flag++;
     }
     //-------------------------------------------------------------------		
-    {
+    /*{
     	scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
     	scalar b = 0.07780*this->R()*Tc_/Pc_;
     	scalar Tr = T/Tc_;
@@ -207,7 +207,7 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::cp
 		root = S + Tl - a2/3.0;
 		rhogas = p/(root*this->R()*T);
     	}
-    }	
+    }*/	
     //-------------------------------------------------------------------------
     
     {
@@ -216,7 +216,7 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::cp
     	//long kph = -2, kguess = 0; // integer required for TP-calculation
 
     	Tgas = T;        //K
-	rhogas = rhogas/this->W();
+	rhogas = this->rho(p,T)/this->W();
     	//pgas = p/1000.0; //kpa
 
         
@@ -260,11 +260,11 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::hs
     scalar hs_;
     scalar rhogas;	
 
-    scalar Tc_ = 304.13;
-    scalar Vc_ = 0.0021386/this->W();
-    scalar Pc_ = 7377300;
-    scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);	
-    scalar omega_ = 0.22394;
+    //scalar Tc_ = 304.13;
+    //scalar Vc_ = 0.0021386/this->W();
+    //scalar Pc_ = 7377300;
+    //scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);	
+    //scalar omega_ = 0.22394;
 
     // Load the shared library
     //-------------------------------------------------------------------
@@ -292,7 +292,7 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::hs
 	flag++;
     }
     //-------------------------------------------------------------------		
-    {
+    /*{
     	scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
     	scalar b = 0.07780*this->R()*Tc_/Pc_;
     	scalar Tr = T/Tc_;
@@ -350,31 +350,40 @@ inline Foam::scalar Foam::hRefpropGasThermo<equationOfState>::hs
 		root = S + Tl - a2/3.0;
     		rhogas = p/(root*this->R()*T);
 	}
-    }
+    }*/
 	        
     {
     	double Tgas,pgas,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
     	double xgas[]={1.0};
     	long kph = -2, kguess = 0;
+    	
+
+	// enthalpy iteration by Newton's method may fail
+	if (T < 0.0 || T > 350.0) Info << "abnormal behaviour in enthalpy iteration ...................." << nl << endl;
     
-    	Tgas = T;
-    	//pgas = p/1000.0;
-	rhogas = rhogas/this->W();
-    	//TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);
+	Tgas = T;
+	rhogas = this->rho(p,T)/this->W();
+ 
+	//TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);
     	//THERMdll(Tgas,rhogas,xgas,pgas,e,h,s,Cv,Cp,w,hjt);
+	ENTHALdll(Tgas,rhogas,xgas,h);
+
+	hs_ = h*1000.0;
 
 	//Info << "density = " << rhogas << nl << endl;
 	//Info << "temperature = " << T << nl << endl;
 	//Info << "pressure = " << p << nl << endl;
-	//Info << "R = " << this->R() << nl << endl; 
-	
-	ENTHALdll(Tgas,rhogas,xgas,h);
-
-	hs_ = h*1000.0;
-    	
+	//Info << "R = " << this->R() << nl << endl;    	
 	//Info << "hs = " << (h*1000.0/this->W()) << nl << endl;	
     	//Info << "Cp*T = " << Cp_*T << nl << endl;
     
+	// saturated properties only 
+	//hs_ = (-0.000508*Foam::pow (Tgas,4)+0.402133*Foam::pow(Tgas,3)-121.645905*Foam::pow(Tgas,2)+17114.230257*Tgas-537903.887493)*this->W();
+	
+	//Info << "iterating enthalpy .............." << hs_ << nl << endl;
+	//Info << "iterating temperature .............." << Tgas << nl << endl;
+	//Info << "iterting pressure .............." << p << nl << endl;
+
     	//return Cp_*T;
     }
 

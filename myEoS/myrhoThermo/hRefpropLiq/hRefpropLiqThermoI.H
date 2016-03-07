@@ -117,11 +117,11 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::cp
     scalar cp_;	 
     scalar rholiq;
 
-    scalar Tc_ = 304.13;
+    /*scalar Tc_ = 304.13;
     scalar Vc_ = 0.0021386/this->W();
     scalar Pc_ = 7377300;
     scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);
-    scalar omega_ = 0.22394;
+    scalar omega_ = 0.22394;*/
 				
     // Load the shared library
     //-------------------------------------------------------------------
@@ -149,7 +149,7 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::cp
 	flag++;
     }
     //-------------------------------------------------------------------		
-    {
+    /*{
 
     
     	scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
@@ -208,7 +208,7 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::cp
 		root = S + Tl - a2/3.0;
 		rholiq = p/(root*this->R()*T);
     	}
-    }
+    }*/
     
     {
     	double Tliq,pliq,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
@@ -216,7 +216,7 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::cp
     	//long kph = -1, kguess = 0; // integer required for TP-calculation
 
     	Tliq = T;        //K
-	rholiq = rholiq/this->W();
+	rholiq = this->rho(p,T)/this->W();
     	//pliq = p/1000.0; //kpa
 
         
@@ -259,11 +259,11 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::hs
     scalar hs_;
     scalar rholiq;	
 
-    scalar Tc_ = 304.13;
-    scalar Vc_ = 0.0021386/this->W();
-    scalar Pc_ = 7377300;
-    scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);
-    scalar omega_ = 0.22394;
+    //scalar Tc_ = 304.13;
+    //scalar Vc_ = 0.0021386/this->W();
+    //scalar Pc_ = 7377300;
+    //scalar Zc_ = Pc_*Vc_/(this->R()*Tc_);
+    //scalar omega_ = 0.22394;
 
     // Load the shared library
     //-------------------------------------------------------------------
@@ -291,7 +291,7 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::hs
 	flag++;
     }
     //-------------------------------------------------------------------		
-    {
+    /*{
 
     
     	scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
@@ -351,27 +351,30 @@ inline Foam::scalar Foam::hRefpropLiqThermo<equationOfState>::hs
 		root = S + Tl - a2/3.0;
 		rholiq = p/(root*this->R()*T);
     	}
-    }    
+    }*/    
     {
     	double Tliq,pliq,e=NULL,h=NULL,s=NULL,Cv=NULL,Cp=NULL,w=NULL,hjt=NULL;
     	double xliq[]={1.0};
     	//long kph = -1, kguess = 0;
     
     	Tliq = T;
-    	//pliq = p/1000.0;
-	rholiq = rholiq/this->W();
-    	//TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
-    	//THERMdll(Tliq,rholiq,xliq,pliq,e,h,s,Cv,Cp,w,hjt);
+	rholiq = this->rho(p,T)/this->W();
+    	
+	//TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
+    	//THERMdll(Tliq,rholiq,xliq,pliq,e,h,s,Cv,Cp,w,hjt);	
 	ENTHALdll(Tliq,rholiq,xliq,h);
 
 	hs_ = h*1000.0;
     	
 	//Info << "hs = " << (h*1000.0/this->W()) << nl << endl;	
 	//Info << "liquid density = " << rholiq*this->W() << nl << endl;	
-	//Info << "liquid T = " << Tliq << nl << endl;
-	    	
+	//Info << "liquid T = " << Tliq << nl << endl;    	
 	//Info << "Cp*T = " << Cp_*T << nl << endl;
     
+	// saturated properties only 
+	//hs_ = (0.000491*Foam::pow(Tliq,4)-0.397733*Foam::pow(Tliq,3)+120.103770*Foam::pow(Tliq,2)-14045.518453*Tliq+449986.580984)*this->W();
+
+
     	//return Cp_*T;
     }
 

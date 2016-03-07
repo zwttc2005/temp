@@ -4,13 +4,26 @@
     
     double scaleFactor;
 
-    double xDim;	
+    double xDim;
+
+    double xDimSum;
 
     int celln;
-
-     // obtain cell length 
+    
+    // obtain number of cells
+    // initialise flowArea 
+    celln = -1;
+    forAll(flowArea,celli)
+    {
+    	flowArea[celli] = 1; // initialisation
+    	celln += 1;
+    }
+	
+    // obtain cell length 
     const faceList & ff = mesh.faces();
     const pointField & pp = mesh.points();
+
+    xDimSum = 0.0;	
 
     forAll(mesh.C(), celli)
     {
@@ -25,17 +38,16 @@
 
 	xDim = Foam::max(pLocal & vector(1,0,0)) - Foam::min(pLocal & vector(1,0,0));
 	xDimDim[celli] = scalar(xDim);
+    	
+	if (celli <= celln-100) xDimSum = xDimSum+xDim;
     }
+
+
+    Info << "Dimension = " << xDimSum << nl << endl; 	
 
 
     // assign flowarea value to the cell centre 
-    // obtain number of cells as well
-    celln = -1;
-    forAll(flowArea,celli)
-    {
-    	flowArea[celli] = 1; // initialisation
-    	celln += 1;
-    }
+
 
     forAll(flowArea,celli)
     {
