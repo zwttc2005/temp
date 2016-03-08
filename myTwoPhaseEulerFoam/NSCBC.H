@@ -34,22 +34,22 @@
 	    rho_ghost = scalar(33.295);
       	    rho1_ghost = scalar(33.295);
       	    rho2_ghost = scalar(1088.9);
-      	    T1_ghost = scalar(240.00);
-      	    T2_ghost = scalar(240.00);
-            alpha1_ghost = scalar(0.1)*(rho_ghost/rho1_ghost);
+      	    T1_ghost = scalar(220.00);
+      	    T2_ghost = scalar(220.00);
+            alpha1_ghost = scalar(1.0)*(rho_ghost/rho1_ghost);
             alpha2_ghost = scalar(1.0) - alpha1_ghost;
 	}
   	else
   	{
-  	    U_ghost = U_ghost_update;     //mag(U.boundaryField()[patchID][0]);
+  	    U_ghost = U_ghost_update;  	    //mag(U.boundaryField()[patchID][0]);
       	    p_ghost = p_ghost_update;       //p.boundaryField()[patchID][0];
-	    rho_ghost = rho_ghost_update;   //alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
+	    rho_ghost = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
 	    rho1_ghost = rho1.boundaryField()[patchID][0];
       	    rho2_ghost = rho2.boundaryField()[patchID][0];
-      	    T1_ghost = T_ghost_update;      //thermo1.T().boundaryField()[patchID][0]; 
-      	    T2_ghost = T_ghost_update;      //thermo2.T().boundaryField()[patchID][0];
-      	    alpha1_ghost = alpha1_ghost_update; 
-      	    alpha2_ghost = 1.0 - alpha1_ghost;  //alpha2.boundaryField()[patchID][0];
+      	    T1_ghost = thermo1.T().boundaryField()[patchID][0]; 
+      	    T2_ghost = thermo2.T().boundaryField()[patchID][0];
+      	    alpha1_ghost = alpha1.boundaryField()[patchID][0]; 
+      	    alpha2_ghost = alpha2.boundaryField()[patchID][0];
   	}
 	
     	  Info << "pressure2 = " << p.boundaryField()[patchID][0] << nl << endl;
@@ -101,11 +101,11 @@
     scalar dt = runTime.deltaT().value();
 		
     // wave amplitude calculation
-    if (U_ghost > 0.0)
+    if (U_ghost > sos)
     {
-	  	scalar wave1 = ((U_ghost-sos)/xDimDim[1])*(p_ghost-p_interior-rho_ghost*sos*(U_ghost-U_interior));
-	  	scalar wave2 = (U_ghost/xDimDim[1])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
-	  	scalar wave3 = ((U_ghost+sos)/xDimDim[1])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
+	  	scalar wave1 = ((U_ghost-sos)/xDimDim[celln])*(p_ghost-p_interior-rho_ghost*sos*(U_ghost-U_interior));
+	  	scalar wave2 = (U_ghost/xDimDim[celln])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
+	  	scalar wave3 = ((U_ghost+sos)/xDimDim[celln])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
 
 		Info << "wave1 = " << wave1 << nl << endl;
 		Info << "wave2 = " << wave2 << nl << endl;	  
@@ -121,8 +121,8 @@
     }
     else if (U_ghost <= sos)
     {
-	  	scalar wave2 = 0.0; //(U_ghost/xDimDim[1])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
-	  	scalar wave3 = ((U_ghost+sos)/xDimDim[1])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
+	  	scalar wave2 = 0.0; //(U_ghost/xDimDim[celln])*(p_ghost - p_interior-sos*sos*(rho_ghost-rho_interior));
+	  	scalar wave3 = ((U_ghost+sos)/xDimDim[celln])*(p_ghost-p_interior+rho_ghost*sos*(U_ghost-U_interior));
     		scalar wave1 = -wave3;
   
 		Info << "wave1 = " << wave1 << nl << endl;
@@ -141,7 +141,7 @@
 
 
   	// singlephase or twophase PD-flash calculation
- 	p_cal = p_ghost_update/1000.0; // kpa
+ 	/*p_cal = p_ghost_update/1000.0; // kpa
   	rho_cal = rho_ghost_update/MW; // mol/L
   	PDFLSHdll(p_cal,rho_cal,x_cal,T_cal,rholiq_cal,rhovap_cal,xliq_cal,xvap_cal,q_cal,e_cal,h_cal,s_cal,cv_cal,cp_cal,w_cal,ierr,herr,255);
    
@@ -164,6 +164,6 @@
 	Info << "U_ghost_update = " << U_ghost_update << nl << endl;
 	Info << "rho_ghost_update = " << rho_ghost_update << nl << endl;
 	Info << "T_ghost_update = " << T_ghost_update << nl << endl;
-  	Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;
+  	Info << "alpha1_ghost_update = " << alpha1_ghost_update << nl << endl;*/
   
   //-----------------------------------------------------------

@@ -28,7 +28,7 @@ regions
 (
     boxToCell
     {
-        box (-55.235 -1 -1) (6 1 1);
+        box (-17.029 -1 -1) (6 1 1);
         fieldValues
         (
             volScalarFieldValue alpha.air 0.99 volScalarFieldValue T.air 240 volScalarFieldValue T.water 240 volScalarFieldValue p 1282500

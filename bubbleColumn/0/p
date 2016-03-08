@@ -231,7 +231,8 @@ boundaryField
     }
     sideRight
     {
-        type            zeroGradient;
+        type            fixedValue;
+        value           uniform 599000;
     }
     topbottom
     {

@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
 	#include "massAndEnergyTransfer.H"
 	
 	// update boundary conditions (NSCBC)
-	//#include "NSCBC.H"
+	#include "NSCBC.H"
 	
 	// runtime time output    
 	runTime++;
@@ -123,9 +123,9 @@ int main(int argc, char *argv[])
 
             
 	    // update boundary conditions
-	    //p.boundaryField()[patchID] == p_ghost_update;
-            //U1.boundaryField()[patchID] == vector(U_ghost_update,0,0);
-            //U2.boundaryField()[patchID] == vector(U_ghost_update,0,0);
+	    p.boundaryField()[patchID] == p_ghost_update;
+            U1.boundaryField()[patchID] == vector(U_ghost_update,0,0);
+            U2.boundaryField()[patchID] == vector(U_ghost_update,0,0);
             //thermo1.T().boundaryField()[patchID] == T_ghost_update;
             //thermo2.T().boundaryField()[patchID] == T_ghost_update;           
 	    //alpha1.boundaryField()[patchID] == alpha1_ghost_update;

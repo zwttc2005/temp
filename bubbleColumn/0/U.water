@@ -27,15 +27,15 @@ boundaryField
     }
     sideRight
     {
-        type                 zeroGradient;
+        //type                 zeroGradient;
 
 	//type               advective;
         //phi                phi;
 	//fieldInf           (400 0 0);
         //lInf               10;  
-        //type               zeroGradient;
-      	//type               fixedValue; 
-        //value              uniform (0 0 0); 
+      	
+	type               fixedValue; 
+        value              uniform (0 0 0); 
     }
     topbottom
     {
