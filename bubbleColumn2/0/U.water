@@ -1,0 +1,50 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.4.0                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      binary;
+    class       volVectorField;
+    object      U.water;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   uniform (0 0 0);
+
+boundaryField
+{
+    sideLeft
+    {
+        type                 symmetryPlane; //fixedValue; //symmetryPlane;
+	//value              uniform (0 0 0);
+    }
+    sideRight
+    {
+        //type                 zeroGradient;
+
+	//type               advective;
+        //phi                phi;
+	//fieldInf           (400 0 0);
+        //lInf               10;  
+      	
+	type               fixedValue; 
+        value              uniform (0 0 0); 
+    }
+    topbottom
+    {
+    	type               empty;
+    }
+    frontback
+    {
+    	type               empty;
+    }
+}
+
+// ************************************************************************* //

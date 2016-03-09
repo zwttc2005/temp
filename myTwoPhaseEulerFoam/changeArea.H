@@ -22,6 +22,7 @@
     // obtain cell length 
     const faceList & ff = mesh.faces();
     const pointField & pp = mesh.points();
+    static int flagLength = 0;	
 
     xDimSum = 0.0;	
 
@@ -39,11 +40,15 @@
 	xDim = Foam::max(pLocal & vector(1,0,0)) - Foam::min(pLocal & vector(1,0,0));
 	xDimDim[celli] = scalar(xDim);
     	
-	if (celli <= celln-100) xDimSum = xDimSum+xDim;
+	if (celli <= celln) xDimSum = xDimSum+xDim;
+	if (xDimSum >= 256.0 && flagLength == 0)
+	{
+		Info << "Pipe end cell index = " << celli << nl << endl;
+		flagLength++;
+	}
     }
 
-
-    Info << "Dimension = " << xDimSum << nl << endl; 	
+    //Info << "Dimension = " << xDimSum << nl << endl; 	
 
 
     // assign flowarea value to the cell centre 
@@ -51,11 +56,11 @@
 
     forAll(flowArea,celli)
     {
-    	if (celli >= (celln-100) && celli < (celln))
+    	if (celli >= (celln-51) && celli < (celln))
 	{
-		celld = (double) (celli-(celln-100))/500;  
+		celld = (double) (celli-(celln-51))/200;  
 		scaleFactor = Foam::tanh(celld);	
-		flowArea[celli] = flowArea[(celln-100)]+flowArea[(celln-100)]*scalar(scaleFactor);	
+		flowArea[celli] = flowArea[(celln-51)]+flowArea[(celln-51)]*scalar(scaleFactor);	
 	}
 	//else if (celli > (celln-50) && celli < celln)
 	//{
@@ -63,9 +68,9 @@
 		//scaleFactor = Foam::tanh(celld);
 		//flowArea[celli] =flowArea[(celln-50)]+5.0*scalar(scaleFactor);//flowArea[(celln-50)]*scalar(scaleFactor);
 	//}
-	else if (celli >= celln-100)
+	else if (celli >= celln-51)
 	{
-		flowArea[celli] = flowArea[(celln-100)];
+		flowArea[celli] = flowArea[(celln-51)];
 	}
     	
     }
@@ -73,11 +78,11 @@
     // assign flowAreaGrad to each cell centre
     forAll(flowAreaGrad, celli)
     {
-	if (celli < (celln-100))    
+	if (celli < (celln-51))    
 	{
 		flowAreaGrad[celli] = 0; 
     	}
-    	else if (celli >= (celln-100) && celli < celln) 
+    	else if (celli >= (celln-51) && celli < celln) 
 	{
 		flowAreaGrad[celli] = (flowArea[celli+1] - flowArea[celli])/xDimDim[celli];
 	}
@@ -90,15 +95,15 @@
     // assign areaSource to each cell centre
     forAll(areaSource, celli)
     {
-	if (celli < (celln-100))    
+	if (celli < (celln-51))    
 	{
 		areaSource[celli] = 0; 
     	}
-    	else if (celli >= (celln-100) && celli < celln) 
+    	else if (celli >= (celln-51) && celli < celln) 
 	{
 		areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
 	}
-	else if (celli >= celln-100)
+	else if (celli >= celln-51)
 	{	
 		areaSource[celli] = 0;
 	}	

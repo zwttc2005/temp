@@ -18,15 +18,17 @@ FoamFile
 fields
 (
     U.air
+    U.water
     p	
     T.air	
+    T.water 	
 );
 
 // Locations to be probed. runTime modifiable!
 probeLocations
 (
-    (-17.029 0.0 0.0)
-    (-240.0 0.0 0.0)
+    (249.6 0.0 0.0)
+    (116.5 0.0 0.0)
     //(0.0762 0.0253 0.0)
     //(0.1016 0.0253 0.0)
     //(0.1270 0.0253 0.0)

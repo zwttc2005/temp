@@ -7,7 +7,7 @@
 
 // define problem specific constant
 
-scalar Ctou = 1.0, tou = 0.00001; //0.00001;
+scalar Ctou = 1.0, tou = 0.0001; //0.00001;
 
 // hSatV, hSatL
 // hSatV = -0.000508*Foam::pow (T,4)+0.402133*Foam::pow(T,3)-121.645905*Foam::pow(T,2)+17114.230257*T-537903.887493;
@@ -32,8 +32,8 @@ for(i = 0; i < celln+1; i++)
 	
 	// equilibrium relation
 	
-	hSatV = -0.000508*Foam::pow (TvapS,4)+0.402133*Foam::pow(TvapS,3)-121.645905*Foam::pow(TvapS,2)+17114.230257*TvapS-537903.887493;
-	hSatL = 0.000491*Foam::pow(TliqS,4)-0.397733*Foam::pow(TliqS,3)+120.103770*Foam::pow(TliqS,2)-14045.518453*TliqS+449986.580984;
+	hSatV = -0.000499*Foam::pow (TvapS,4)+0.391180*Foam::pow(TvapS,3)-116.809829*Foam::pow(TvapS,2)+16284.795610*TvapS-493979.751650;
+	hSatL = 0.000761*Foam::pow(TliqS,4)-0.622377*Foam::pow(TliqS,3)+191.786710*Foam::pow(TliqS,2)-24634.683426*TliqS+1069742.444044;
 	
 	pSatV = 2.600717*Foam::pow(TvapS,3)-1288.694897*Foam::pow(TvapS,2)+215032.266882*TvapS-12071874.471421;
 	pSatL = 2.600717*Foam::pow(TliqS,3)-1288.694897*Foam::pow(TliqS,2)+215032.266882*TliqS-12071874.471421;
@@ -46,7 +46,7 @@ for(i = 0; i < celln+1; i++)
 	pS = p[i];
 
 
-	if (alpha1[i] > 0.0 && alpha2[i] > 0.0) 
+	/*if (alpha1[i] > 0.0 && alpha2[i] > 0.0) 
 	{	
 		qV[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatV-hVapS);
 		qL[i] = (Ctou/tou)*alpha1[i]*alpha2[i]*(hSatL-hLiqS);
@@ -76,7 +76,8 @@ for(i = 0; i < celln+1; i++)
 			gammaLu[i] = gammaL[i]*mag(U2[i]);
 		}
 	}
-	else
+	else*/
+	
 	{ 
 		// private doubles
 		scalar mDotV, mDotL;
@@ -87,7 +88,7 @@ for(i = 0; i < celln+1; i++)
 		//if (i == 999) Info << "Delta " << pSatL << nl << endl;
 		//if (i == 999) Info << "liquid " << alpha2[i] << nl << endl;
 
-		if (TvapS < 300.0 && alpha1[i] > 0.0 && pS > pSatV && hVapS < hSatV)
+		if (TvapS < 300.0 && alpha1[i] > 0.0 && pS > pSatV)                // hVapS < hSatV
 		{
 			mDotV = (Ctou/tou)*(alpha1[i]*rhoVapS*((pS-pSatV)/pSatV)); // condensation	
 			
@@ -98,7 +99,7 @@ for(i = 0; i < celln+1; i++)
 			mDotV = 0.0;
 		}
 
-		if (TliqS < 300.0 && alpha2[i] > 0.0 && pSatL > pS && hLiqS > hSatL)
+		if (TliqS < 300.0 && alpha2[i] > 0.0 && pSatL > pS)                // hLiqS > hSatL
 		{
 			mDotL = (Ctou/tou)*(alpha2[i]*rhoLiqS*((pSatL-pS)/pSatL)); // evaporation 
 		}
@@ -179,9 +180,9 @@ for(i = 0; i < celln+1; i++)
     	//}
 //}
 
-Info << "gammaL = " << gammaL[celln] << nl << endl;
-Info << "qL = " << qL[celln] << nl << endl;
-Info << "hLiqS = " << hLiq[celln] << nl << endl;
-Info << "hSatL = " << hSatL << nl << endl;
+Info << "gammaL = " << gammaL[(celln-100)] << nl << endl;
+Info << "qL = " << qL[(celln-100)] << nl << endl;
+Info << "hLiqS = " << hLiq[(celln-100)] << nl << endl;
+//Info << "hSatL = " << hSatL << nl << endl;
 
 
