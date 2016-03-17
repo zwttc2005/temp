@@ -1,4 +1,4 @@
-    // declare cell-to-cell length
+    // declaration of cell-to-cell length
     volScalarField xDimDim // cell-to-cell length	
     (
      IOobject
@@ -14,7 +14,7 @@
      dimensionedScalar("0",dimensionSet (0,1,0,0,0),0)
      
     );	
-    // declare the cell centre variable 
+    // declaratino of the cell centre variable 
     volScalarField flowArea // flow area of that specific cell 	
     (
      IOobject
@@ -32,7 +32,7 @@
     );	
    
 
-    // declare the gradient of area along flow direction
+    // declaration of the gradient of area along flow direction
     volScalarField flowAreaGrad 	
     (
      IOobject
@@ -49,7 +49,7 @@
      
     );	
     
-    // declare the area part of the source term
+    // declaration of the area part of the source term
     volScalarField areaSource 	
     (
      IOobject
@@ -66,7 +66,7 @@
      
     );	
     
-    // declare bulk density 
+    // declaration of  bulk density 
     volScalarField rho_bulk 	
     (
      IOobject
@@ -135,7 +135,7 @@
     );	
 
 
-    // define transporting variables 
+    // declaration of transporting variables 
     volScalarField qV
     (
      IOobject
@@ -211,4 +211,55 @@
      ),
 	mesh,
  	dimensionedScalar("0",dimensionSet (1,-2,-2,0,0),0)
+   );
+
+   // declaration of the friction souce terms 	
+   volScalarField Fv
+   (
+     IOobject
+     (
+ 	"Fv",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-2,-2,0,0),0)
+   );
+
+   volScalarField Fl
+   (
+     IOobject
+     (
+ 	"Fl",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-2,-2,0,0),0)
+   );
+
+
+   volScalarField FvU_bulk
+   (
+     IOobject
+     (
+ 	"FvU_bulk",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-1,-3,0,0),0)
+   );
+
+
+   volScalarField FlU_bulk
+   (
+     IOobject
+     (
+ 	"FlU_bulk",
+ 	runTime.timeName(),
+ 	mesh
+     ),
+	mesh,
+ 	dimensionedScalar("0",dimensionSet (1,-1,-3,0,0),0)
    );

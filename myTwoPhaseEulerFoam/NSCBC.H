@@ -41,7 +41,7 @@
 	}
   	else
   	{
-  	    U_ghost = U_ghost_update;  	    //mag(U.boundaryField()[patchID][0]);
+  	        U_ghost = U_ghost_update;       //mag(U.boundaryField()[patchID][0]);
       	    p_ghost = p_ghost_update;       //p.boundaryField()[patchID][0];
 	    rho_ghost = alpha1.boundaryField()[patchID][0]*rho1.boundaryField()[patchID][0]+alpha2.boundaryField()[patchID][0]*rho2.boundaryField()[patchID][0];
 	    rho1_ghost = rho1.boundaryField()[patchID][0];

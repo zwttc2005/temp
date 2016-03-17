@@ -42,6 +42,7 @@
       + fvOptions(alpha1, rho1, he1)
       - (alpha1*rho1*mag(U1)*he1)*areaSource     //quasi-one-dimensional flow source term
       + qV	
+      + FvU_bulk
     );
 
     fvScalarMatrix he2Eqn
@@ -75,6 +76,7 @@
       + fvOptions(alpha2, rho2, he2)
       - (alpha2*rho2*mag(U2)*he2)*areaSource   // quasi-one-dimensional soure term
       + qL 
+      + FlU_bulk
     );
 
     fvOptions.constrain(he1Eqn);

@@ -75,6 +75,15 @@ int main(int argc, char *argv[])
 	 dimensionSet (1,-3,-1,0,0,0,0),
 	 scalar(0.000));
 
+    // pipeline dimension 
+    dimensionedScalar Dh
+ 	("Dh",
+	 dimensionSet (0,1,0,0,0,0,0),
+	 scalar(0.233));
+   
+    // friction factor
+ 	  scalar frictionFactor = 0.005;
+
     //my volScalarField declaration 
     #include "myVolScalar.H"
 
@@ -104,7 +113,7 @@ int main(int argc, char *argv[])
 	#include "massAndEnergyTransfer.H"
 	
 	// update boundary conditions (NSCBC)
-	#include "NSCBC.H"
+	#include "NSCBC2.H"
 	
 	// runtime time output    
 	runTime++;
@@ -123,20 +132,13 @@ int main(int argc, char *argv[])
 
             
 	    // update boundary conditions
-	    p.boundaryField()[patchID] == p_ghost_update;
+	    p.boundaryField()[patchID] == p_ghost;
             U1.boundaryField()[patchID] == vector(U_ghost_update,0,0);
             U2.boundaryField()[patchID] == vector(U_ghost_update,0,0);
             //thermo1.T().boundaryField()[patchID] == T_ghost_update;
             //thermo2.T().boundaryField()[patchID] == T_ghost_update;           
 	    //alpha1.boundaryField()[patchID] == alpha1_ghost_update;
 	    //alpha2.boundaryField()[patchID] == 1.0 - alpha1_ghost_update;
-
-
-            //p[celln] = p_ghost_update;
-            //U1[celln] = vector(U_ghost_update,0,0);
-            //U2[celln] = vector(U_ghost_update,0,0);
-            //thermo1.T()[celln] = T_ghost_update;
-            //thermo2.T()[celln] = T_ghost_update;
 
 
             U_bulk = mag(alpha1*U1+alpha2*U2);
@@ -146,7 +148,7 @@ int main(int argc, char *argv[])
             volScalarField contErr1
             (
                 fvc::ddt(alpha1, rho1) + fvc::div(alphaRhoPhi1)
-              - (fvOptions(alpha1, rho1)&rho1)                       //+gamma_LV-gamma_VL // fvOptions are the runtime semi-implicit source term 
+              - (fvOptions(alpha1, rho1)&rho1)                      // fvOptions are the runtime semi-implicit source term 
               + alpha1*rho1*mag(U1)*areaSource
 	      - gammaV
 	          );
@@ -154,16 +156,22 @@ int main(int argc, char *argv[])
             volScalarField contErr2
             (
                 fvc::ddt(alpha2, rho2) + fvc::div(alphaRhoPhi2)
-               - (fvOptions(alpha2, rho2)&rho2)                    //-gamma_LV+gamma_VL // 
+               - (fvOptions(alpha2, rho2)&rho2)                     
                + alpha2*rho2*mag(U2)*areaSource
 	       - gammaL
 	          );
-
-			
+            
+            // update friction source term  
+	    Fv = - scalar(2)*frictionFactor*alpha1*rho1*mag(U1)*mag(U1)/Dh;  
+            Fl = - scalar(2)*frictionFactor*alpha2*rho2*mag(U2)*mag(U2)/Dh;
+            
             #include "UEqns.H"
 
-	    U_bulk = mag(alpha1*U1+alpha2*U2);                     // update velocity field                   				
-       
+            // update friction source term for energy balance 
+	    U_bulk = mag(alpha1*U1+alpha2*U2);                    				
+            FvU_bulk = U_bulk*Fv;
+            FlU_bulk = U_bulk*Fl;
+
             #include "EEqns.H"
 
             // --- Pressure corrector loop
@@ -183,12 +191,6 @@ int main(int argc, char *argv[])
         #include "write.H"
 	
 	//const volScalarField& test = alpha1_.db().lookupObject<volScalarField>("flowAreaGrad");
-
-
-        Info<< "flowArea=" << flowArea[950] << nl << endl; 
-   	//Info<< "flowAreaGrad=" << flowAreaGrad[950] << nl << endl; 
-        //Info<< "areaSource=" << areaSource[950] << nl << endl;
-
 
 	//loop over all cells:
 	//forAll(mesh.C(), cellI) 
