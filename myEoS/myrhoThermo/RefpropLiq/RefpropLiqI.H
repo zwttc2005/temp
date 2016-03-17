@@ -151,7 +151,7 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::Z
     // Load the shared library
     //-------------------------------------------------------------------
     
-    static int flag = 0;
+    /*static int flag = 0;
     long ierr = 0;
     char herr[255];
 
@@ -179,9 +179,9 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::Z
     TPRHOdll(Tliq,pliq,xliq,kph,kguess,rholiq,ierr,herr,255);
     
 
-    scalar root = p*(1.0/(rholiq*1000.0))/(8.314*T); 
+    scalar root = p*(1.0/(rholiq*1000.0))/(8.314*T);*/ 
     
-    /*scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
+    scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
     scalar b = 0.07780*this->R()*Tc_/Pc_;
     scalar Tr = T/Tc_;
 
@@ -252,7 +252,7 @@ inline Foam::scalar Foam::RefpropLiq<Specie>::Z
 	    Info << "a2 =" << test3 << nl << endl;
 	    Info << "Tl =" << test4 << nl << endl;
 	    Info << "S =" << test5 << nl << endl;
-    }*/
+    }
 
     return root;
 }

@@ -171,9 +171,9 @@ inline Foam::scalar Foam::RefpropGas<Specie>::Z
 
     long kph = -2, kguess = 0;
     double Tgas = T, pgas = p/1000.0,xgas[] = {1.0},rhogas = NULL;
-    TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);*/
+    TPRHOdll(Tgas,pgas,xgas,kph,kguess,rhogas,ierr,herr,255);
     
-    //scalar root = p*(1.0/(rhogas*1000.0))/(8.314*T); 
+    scalar root = p*(1.0/(rhogas*1000.0))/(8.314*T);*/ 
     
     scalar a = 0.45724*sqr(this->R())*sqr(Tc_)/Pc_;
     scalar b = 0.07780*this->R()*Tc_/Pc_;
