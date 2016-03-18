@@ -17,11 +17,11 @@ FoamFile
 
 defaultFieldValues
 (
-    volScalarFieldValue alpha.air 0.5
-    
-    volScalarFieldValue T.air 274.69
-    volScalarFieldValue T.water 274.69
-    volScalarFieldValue p 3623237.0168
+    volScalarFieldValue alpha.air 0.48
+
+    volScalarFieldValue T.air 274.13
+    volScalarFieldValue T.water 274.13
+    volScalarFieldValue p 3595827.648    
 );
 
 regions
