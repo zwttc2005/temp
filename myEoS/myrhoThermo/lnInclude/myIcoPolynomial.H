@@ -1,1 +1,0 @@
-../myIcoPolynomial/myIcoPolynomial.H
