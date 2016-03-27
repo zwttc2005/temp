@@ -106,7 +106,7 @@
             }
     	    else if (celli >= (celln-100) && celli < celln) 
 	    {
-		      areaSource[celli] = flowAreaGrad[celli]/flowArea[celli];
+		      areaSource[celli] = 0.; //flowAreaGrad[celli]/flowArea[celli];
 	    }
 	    else if (celli >= celln)
 	    { 	

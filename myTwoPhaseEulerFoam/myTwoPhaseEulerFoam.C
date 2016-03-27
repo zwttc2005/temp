@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	 scalar(0.233));
    
     // friction factor
- 	  scalar frictionFactor = 0.001;
+ 	  scalar frictionFactor = 0.005;
 
     //my volScalarField declaration 
     #include "myVolScalar.H"
